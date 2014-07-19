@@ -19,11 +19,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.gote.AppUtil;
+import com.gote.action.tournament.UpdateResultsButton;
 import com.gote.pojo.Tournament;
 import com.gote.ui.home.HomeUI;
 import com.gote.util.tournament.TournamentUtil;
@@ -80,6 +82,13 @@ public class TournamentUI extends JFrame implements WindowListener {
    */
   private JPanel buildContentPanel() {
     JPanel panel = new JPanel();
+    
+    JButton jButtonUpdate = new JButton(new UpdateResultsButton(this, homeUI, tournament, TournamentUtil.BUTTON_UPDATE_LABEL));
+    JButton jButtonExport = new JButton(TournamentUtil.BUTTON_EXPORT_LABEL);
+    
+    panel.add(jButtonUpdate);
+    panel.add(jButtonExport);
+    
     return panel;
   }
 
