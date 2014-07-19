@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Siméon GIROUSSE
+ * Copyright 2014 Simeon GIROUSSE
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.gote;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
@@ -38,13 +39,13 @@ public class TournamentManager {
    * @param args String[]
    */
   public static void main(String[] args) {
-    LOGGER.info("[START] Application starting");
+    LOGGER.log(Level.INFO,"[START] Application starting");
     TournamentManager tournamentManager = new TournamentManager();
     tournamentManager.startUI();
   }
 
   private void startUI() {
-    LOGGER.info("Starting the UI \"HomeUI\"");
+    LOGGER.log(Level.INFO,"Starting the UI \"HomeUI\"");
     // Start the application with the main ui
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {

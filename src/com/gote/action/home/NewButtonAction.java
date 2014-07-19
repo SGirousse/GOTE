@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Siméon GIROUSSE
+ * Copyright 2014 Simeon GIROUSSE
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.gote.action.home;
 
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -48,7 +49,7 @@ public class NewButtonAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent pActionEvent) {
-    LOGGER.info("New tournament button clicked");
+    LOGGER.log(Level.INFO,"New tournament button clicked");
     homeUI.setVisible(false);
     NewTournamentUI newTournamentUI = new NewTournamentUI(homeUI);
     newTournamentUI.setVisible(true);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Siméon GIROUSSE
+ * Copyright 2014 Simeon GIROUSSE
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class AppUtil {
   public static final String APP_VERSION = "0.2";
 
   /** Authors */
-  public static final String APP_AUTHOR = "Siméon GIROUSSE - simeon[dot]girousse[at]gmail[dot]com";
+  public static final String APP_AUTHOR = "Simeon GIROUSSE - simeon[dot]girousse[at]gmail[dot]com";
 
   /** Logo */
   public static final String APP_ICON_PATH = "resources/images/GOTE-icone.jpg";

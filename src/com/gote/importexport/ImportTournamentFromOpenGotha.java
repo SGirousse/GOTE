@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Siméon GIROUSSE
+ * Copyright 2014 Simeon GIROUSSE
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -59,6 +61,9 @@ import com.gote.util.Servers;
  */
 public class ImportTournamentFromOpenGotha extends ImportTournament {
 
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(ImportTournamentFromOpenGotha.class.getName());
+  
   public static final String TAG_TOURNAMENT = "Tournament";
 
   public static final String TAG_PLAYERS = "Players";
@@ -118,11 +123,13 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
   @Override
   public Tournament createTournamentFromConfig(File pFile) {
 
+    LOGGER.log(Level.INFO,"A new tournament is going to be created from the file : "+pFile.getPath());
+    
     Tournament tournament = new Tournament();
     String content = getFileContent(pFile);
 
     if (content == null) {
-      System.out.println("[ERROR] Content is null");
+      LOGGER.log(Level.SEVERE,"File \""+pFile.getPath()+"\" content is null");
       return null;
     }
 
@@ -131,7 +138,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     try {
       document = reader.read(new StringReader(content));
     } catch (DocumentException e) {
-      e.printStackTrace();
+      LOGGER.log(Level.SEVERE,"DocumentException, creation stopped : "+e);
       return null;
     }
 
@@ -190,14 +197,12 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     Element elPlayers = null;
     Element elGames = null;
 
-    pTournament.setServerType(Servers.KGS);
-
     elTournamentRulesSet = pElementTournament.element(TAG_TOURNAMENT_PARAMETER_SET);
     init = elTournamentRulesSet != null;
     if (init) {
       init = initTournamentRules(pTournament, elTournamentRulesSet);
     } else {
-      System.out.println("[ERROR] While getting tournament parameters from open gotha file.");
+      LOGGER.log(Level.SEVERE,"While getting tournament parameters from open gotha file a problem occured.");
       return false;
     }
 
@@ -205,13 +210,13 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
       elPlayers = pElementTournament.element(TAG_PLAYERS);
       init = elPlayers != null;
     } else {
-      System.out.println("[ERROR] During tournament rules initialization");
+      LOGGER.log(Level.SEVERE,"During tournament rules initialization a problem occured.");
       return false;
     }
     if (init) {
       init = initPlayers(pTournament, elPlayers);
     } else {
-      System.out.println("[ERROR] While getting players infos from open gotha file.");
+      LOGGER.log(Level.SEVERE,"While getting players data from open gotha file a problem occured.");
       return false;
     }
 
@@ -219,21 +224,29 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
       elGames = pElementTournament.element(TAG_GAMES);
       init = elGames != null;
     } else {
-      System.out.println("[ERROR] During players initialization");
+      LOGGER.log(Level.SEVERE,"During players initialization a problem occured.");
       return false;
     }
 
     if (init) {
       init = initRounds(pTournament, elGames);
     } else {
-      System.out.println("[ERROR] While getting games infos from open gotha file.");
+      LOGGER.log(Level.SEVERE,"While getting games data from open gotha file a problem occured.");
       return false;
     }
 
     return init;
   }
 
+  /**
+   * Init tournament rules
+   * 
+   * @param pTournament Tournament being builded
+   * @param pElementTournamentRulesSet Element in OpenGotha document
+   * @return boolean, true if everything worked as expected
+   */
   public boolean initTournamentRules(Tournament pTournament, Element pElementTournamentRulesSet) {
+    LOGGER.log(Level.INFO,"Tournament rules initialization");
     boolean init = true;
     Element elementGeneralParameters = pElementTournamentRulesSet.element(TAG_GENERAL_PARAMETER_SET);
     String komi = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI).getValue();
@@ -266,7 +279,15 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     return init;
   }
 
+  /**
+   * Init players list
+   * 
+   * @param pTournament Tournament being builded
+   * @param pElementPlayers Element in OpenGotha document
+   * @return boolean, true if everything worked as expected
+   */
   public boolean initPlayers(Tournament pTournament, Element pElementPlayers) {
+    LOGGER.log(Level.INFO,"Players initialization");
     boolean init = false;
     @SuppressWarnings("unchecked")
     List<Element> listOfPlayers = (List<Element>) pElementPlayers.elements(TAG_PLAYER);
@@ -288,7 +309,15 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     return init;
   }
 
+  /**
+   * Init rounds and games
+   *
+   * @param pTournament Tournament being builded
+   * @param pElementGames Element in OpenGotha document
+   * @return boolean, true if everything worked as expected
+   */
   public boolean initRounds(Tournament pTournament, Element pElementGames) {
+    LOGGER.log(Level.INFO,"Rounds initialization");
     boolean init = false;
     @SuppressWarnings("unchecked")
     List<Element> listOfGames = (List<Element>) pElementGames.elements(TAG_GAME);
@@ -310,12 +339,14 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
         if (roundNumberAsText != null && !roundNumberAsText.isEmpty()) {
           roundPlacement = getRoundPlacement(tournamentRounds, new Integer(roundNumberAsText));
         } else {
-          System.out.println("[WARN] Round number was null or empty");
+          LOGGER.log(Level.WARNING, "No round numbre in configuration file. Line is : "+gameElement.toString());
         }
 
         if (roundPlacement > -1) {
           games = tournamentRounds.get(roundPlacement).getGameList();
         } else {
+
+          LOGGER.log(Level.INFO,"Round "+roundNumberAsText+" is new and will be created.");
           round.setNumber(new Integer(roundNumberAsText));
         }
 

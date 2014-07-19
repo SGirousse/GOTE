@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Siméon GIROUSSE
+ * Copyright 2014 Simeon GIROUSSE
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.gote.ui.home;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -89,7 +90,7 @@ public class HomeUI extends JFrame implements WindowListener {
 
   @Override
   public void windowClosing(WindowEvent e) {
-    LOGGER.info("[END] Application closing");
+    LOGGER.log(Level.INFO,"[END] Application closing");
   }
 
   @Override

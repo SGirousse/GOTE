@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Siméon GIROUSSE
+ * Copyright 2014 Simeon GIROUSSE
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,14 @@ import javax.swing.JFileChooser;
 import com.gote.importexport.ImportTournament;
 import com.gote.pojo.Tournament;
 import com.gote.ui.newtournament.NewTournamentUI;
+import com.gote.util.Servers;
 
+/**
+ * 
+ * Action which handle click for file chooser and its behavior when a file has been selected.
+ * 
+ * @author sgirouss
+ */
 public class FileChooserAction extends AbstractAction {
 
   /** Auto-generated UID */
@@ -64,6 +71,8 @@ public class FileChooserAction extends AbstractAction {
   private void loadTournament(File pFile) {
     ImportTournament importer = newTournamentUI.getSelectedImport();
     tournament = importer.createTournamentFromConfig(pFile);
+    // TODO remove this and check with "checkbox"
+    tournament.setServerType(Servers.KGS);
     newTournamentUI.setTournamentTitleText(tournament.getTitle());
     newTournamentUI.setTournament(tournament);
     newTournamentUI.enableTournamentCreation(true);
