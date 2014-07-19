@@ -49,7 +49,7 @@ public class NewButtonAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent pActionEvent) {
-    LOGGER.log(Level.INFO,"New tournament button clicked");
+    LOGGER.log(Level.INFO, "New tournament button clicked");
     homeUI.setVisible(false);
     NewTournamentUI newTournamentUI = new NewTournamentUI(homeUI);
     newTournamentUI.setVisible(true);

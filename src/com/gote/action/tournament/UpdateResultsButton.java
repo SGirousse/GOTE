@@ -23,7 +23,6 @@ import javax.swing.JOptionPane;
 import com.gote.downloader.GameDownloader;
 import com.gote.downloader.kgs.KGSDownloader;
 import com.gote.pojo.Tournament;
-import com.gote.ui.home.HomeUI;
 import com.gote.ui.tournament.TournamentUI;
 import com.gote.util.Servers;
 import com.gote.util.newtournament.NewTournamentUtil;
@@ -33,19 +32,15 @@ public class UpdateResultsButton extends AbstractAction {
   /** Auto-generated UID */
   private static final long serialVersionUID = 2999373594677668898L;
 
-  /** TMHomeUI reference */
-  HomeUI homeUI;
-
   /** TMTournamentUI reference */
-  TournamentUI tournamentUI;
+  private TournamentUI tournamentUI;
 
   /** Current tournament */
-  Tournament tournament;
+  private Tournament tournament;
 
-  public UpdateResultsButton(TournamentUI pTournamentUI, HomeUI pHomeUI, Tournament pTournament, String pLabel) {
+  public UpdateResultsButton(TournamentUI pTournamentUI, Tournament pTournament, String pLabel) {
     super(pLabel);
     tournamentUI = pTournamentUI;
-    homeUI = pHomeUI;
     tournament = pTournament;
   }
 

@@ -42,10 +42,10 @@ public class TournamentUI extends JFrame implements WindowListener {
   private static final long serialVersionUID = -3204049783640113974L;
 
   /** Reference to the main window */
-  HomeUI homeUI;
+  private HomeUI homeUI;
 
   /** Tournament managed */
-  Tournament tournament;
+  private Tournament tournament;
 
   /**
    * Default constructor
@@ -83,7 +83,7 @@ public class TournamentUI extends JFrame implements WindowListener {
   private JPanel buildContentPanel() {
     JPanel panel = new JPanel();
     
-    JButton jButtonUpdate = new JButton(new UpdateResultsButton(this, homeUI, tournament, TournamentUtil.BUTTON_UPDATE_LABEL));
+    JButton jButtonUpdate = new JButton(new UpdateResultsButton(this, tournament, TournamentUtil.BUTTON_UPDATE_LABEL));
     JButton jButtonExport = new JButton(TournamentUtil.BUTTON_EXPORT_LABEL);
     
     panel.add(jButtonUpdate);
