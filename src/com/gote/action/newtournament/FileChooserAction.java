@@ -76,5 +76,6 @@ public class FileChooserAction extends AbstractAction {
     newTournamentUI.setTournamentTitleText(tournament.getTitle());
     newTournamentUI.setTournament(tournament);
     newTournamentUI.enableTournamentCreation(true);
+    newTournamentUI.setRoundsTable();
   }
 }

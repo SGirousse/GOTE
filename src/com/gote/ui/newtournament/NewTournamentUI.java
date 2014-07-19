@@ -15,12 +15,18 @@
  */
 package com.gote.ui.newtournament;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -30,12 +36,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import com.gote.AppUtil;
 import com.gote.action.newtournament.CreateButtonAction;
 import com.gote.action.newtournament.FileChooserAction;
 import com.gote.importexport.ImportTournament;
 import com.gote.importexport.ImportTournamentFromOpenGotha;
+import com.gote.pojo.Round;
 import com.gote.pojo.Tournament;
 import com.gote.ui.home.HomeUI;
 import com.gote.util.newtournament.NewTournamentUtil;
@@ -51,23 +60,32 @@ public class NewTournamentUI extends JFrame implements WindowListener {
   /** Auto-generated UID */
   private static final long serialVersionUID = -8132964378537435646L;
 
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(NewTournamentUI.class.getName());
+
   /** Home UI reference */
-  HomeUI homeUI;
+  private HomeUI homeUI;
 
   /** Tournament to be created */
-  Tournament tournament;
+  private Tournament tournament;
 
   /** File path editor pane */
-  JEditorPane jEditorPaneFilePath;
+  private JEditorPane jEditorPaneFilePath;
 
   /** Tournament title editor pane */
-  JEditorPane jEditorPaneTournamentTitle;
+  private JEditorPane jEditorPaneTournamentTitle;
 
   /** Tag editor pane */
-  JEditorPane jEditorPaneTag;
+  private JEditorPane jEditorPaneTag;
 
   /** Create button */
-  JButton jButtonCreateTournament;
+  private JButton jButtonCreateTournament;
+
+  /** Table for rounds */
+  private JTable jTableRounds;
+
+  /** Table rounds model */
+  private JRoundsTable jRoundsTable;
 
   /** Window closing for creation of going back to the main window */
   boolean backToMainWindow;
@@ -105,6 +123,9 @@ public class NewTournamentUI extends JFrame implements WindowListener {
    * 
    * @return JPanel
    */
+  /**
+   * @return
+   */
   private JPanel buildContentPanel() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -132,13 +153,30 @@ public class NewTournamentUI extends JFrame implements WindowListener {
     jEditorPaneTag.setPreferredSize(new Dimension(240, 25));
 
     // ROUNDS TABLE
+    jRoundsTable = new JRoundsTable();
+
+    jTableRounds = new JTable(jRoundsTable);
+    jTableRounds.setPreferredSize(new Dimension(400, 100));
+    jTableRounds.setPreferredScrollableViewportSize(jTableRounds.getPreferredSize());
+    jTableRounds.setFillsViewportHeight(true);
+
+    // COMBO BOX
 
     // BUTTONS
     JButton jButtonFilePath = new JButton(new FileChooserAction(this, tournament,
         NewTournamentUtil.BUTTON_LOAD_FILE_LABEL));
     jButtonCreateTournament = new JButton(new CreateButtonAction(homeUI, this, NewTournamentUtil.BUTTON_CREATE_LABEL));
     jButtonCreateTournament.setEnabled(false);
-    JButton jButtonCancel = new JButton(NewTournamentUtil.BUTTON_CANCEL_LABEL);
+    final NewTournamentUI newTournamentUI = this;
+    JButton jButtonCancel = new JButton(new AbstractAction(NewTournamentUtil.BUTTON_CANCEL_LABEL) {
+      /** Default UID */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        newTournamentUI.showWindowClosingEvent();
+      }
+    });
 
     // PANELS
     JPanel jPanelConf = new JPanel();
@@ -175,11 +213,9 @@ public class NewTournamentUI extends JFrame implements WindowListener {
     jPanelLocation.setMinimumSize(new Dimension(750, 70));
 
     JPanel jPanelRounds = new JPanel();
-    jPanelRounds.setLayout(new FlowLayout(FlowLayout.LEFT));
+    jPanelRounds.setLayout(new FlowLayout(FlowLayout.CENTER));
     jPanelRounds.setBorder(BorderFactory.createTitledBorder(NewTournamentUtil.BORDER_TITLE_ROUNDS));
-    jPanelRounds.setPreferredSize(new Dimension(750, 70));
-    jPanelRounds.setMaximumSize(new Dimension(750, 70));
-    jPanelRounds.setMinimumSize(new Dimension(750, 70));
+    jPanelRounds.add(new JScrollPane(jTableRounds), BorderLayout.CENTER);
 
     JPanel jPanelButtons = new JPanel();
     jPanelButtons.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -241,6 +277,15 @@ public class NewTournamentUI extends JFrame implements WindowListener {
     jButtonCreateTournament.setEnabled(pEnable);
   }
 
+  /**
+   * Set the table rounds from current Tournament list of rounds
+   */
+  public void setRoundsTable() {
+    List<Round> rounds = tournament.getRounds();
+    LOGGER.log(Level.INFO, "round a jouter");
+    jRoundsTable.setRounds(rounds);
+  }
+
   @Override
   public void windowActivated(WindowEvent e) {
 
@@ -253,11 +298,7 @@ public class NewTournamentUI extends JFrame implements WindowListener {
 
   @Override
   public void windowClosing(WindowEvent e) {
-    int choice = JOptionPane.showConfirmDialog(this, NewTournamentUtil.CLOSE_WINDOW_MSG,
-        NewTournamentUtil.CLOSE_WINDOW_TITLE, JOptionPane.YES_NO_OPTION);
-    if (choice == JOptionPane.YES_OPTION) {
-      this.dispose();
-    }
+    showWindowClosingEvent();
   }
 
   @Override
@@ -310,6 +351,17 @@ public class NewTournamentUI extends JFrame implements WindowListener {
    */
   public void setBackToMainWindow(boolean pBackToMainWindow) {
     this.backToMainWindow = pBackToMainWindow;
+  }
+
+  /**
+   * Show the confirm dialog when triggering the closing event
+   */
+  public void showWindowClosingEvent() {
+    int choice = JOptionPane.showConfirmDialog(this, NewTournamentUtil.CLOSE_WINDOW_MSG,
+        NewTournamentUtil.CLOSE_WINDOW_TITLE, JOptionPane.YES_NO_OPTION);
+    if (choice == JOptionPane.YES_OPTION) {
+      this.dispose();
+    }
   }
 
 }
