@@ -29,7 +29,7 @@ The current version is still an alpha under development.
 Copyrigth
 ---
 
-Copyright 2014 Siméon GIROUSSE
+Copyright 2014 Simeon GIROUSSE
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
