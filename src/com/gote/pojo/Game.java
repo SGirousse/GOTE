@@ -17,7 +17,7 @@ package com.gote.pojo;
 
 import org.dom4j.Element;
 
-import com.gote.util.TournamentUtils;
+import com.gote.util.TournamentXMLUtil;
 
 /**
  * 
@@ -50,8 +50,22 @@ public class Game {
     setHandicap(new String());
   }
 
-  public void addToXML(Element pRoot) {
-    Element game = pRoot.addElement(TournamentUtils.TAG_GAME);
+  /**
+   * Transform Game to XML
+   * 
+   * @param pRoot "Games" element
+   * @see TournamentXMLUtil
+   */
+  public void toXML(Element pRoot) {
+    // Create game element
+    Element game = pRoot.addElement(TournamentXMLUtil.TAG_GAME);
+    // Add its attributes
+    game.addAttribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER, getWhite().getPseudo());
+    game.addAttribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER, getBlack().getPseudo());
+    game.addAttribute(TournamentXMLUtil.ATT_GAME_URL, getGameUrl());
+    game.addAttribute(TournamentXMLUtil.ATT_GAME_KOMI, getKomi());
+    game.addAttribute(TournamentXMLUtil.ATT_GAME_HANDICAP, getHandicap());
+    game.addAttribute(TournamentXMLUtil.ATT_GAME_RESULT, getResult());
   }
 
   public Player getWhite() {

@@ -16,15 +16,24 @@
 package com.gote.action.newtournament;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 
+import com.gote.AppUtil;
+import com.gote.importexport.ExportTournament;
+import com.gote.importexport.ExportTournamentForGOTE;
 import com.gote.ui.home.HomeUI;
 import com.gote.ui.newtournament.NewTournamentUI;
 import com.gote.ui.tournament.TournamentUI;
 
 public class CreateButtonAction extends AbstractAction {
+
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(CreateButtonAction.class.getName());
 
   /** Auto-generated UID */
   private static final long serialVersionUID = -9058827321125663718L;
@@ -43,14 +52,50 @@ public class CreateButtonAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent pActionEvent) {
-    newTournamentUI.setBackToMainWindow(false);
-    newTournamentUI.dispose();
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        TournamentUI tournamentUI = new TournamentUI(homeUI, newTournamentUI.getTournament());
-        tournamentUI.setVisible(true);
+    if (createTournamentFolders()) {
+      ExportTournament exportTournament = new ExportTournamentForGOTE();
+      exportTournament.export(newTournamentUI.getTournament());
+      newTournamentUI.setBackToMainWindow(false);
+      newTournamentUI.dispose();
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          TournamentUI tournamentUI = new TournamentUI(homeUI, newTournamentUI.getTournament());
+          tournamentUI.setVisible(true);
+        }
+      });
+    } else {
+      // TODO Add a pop-up
+    }
+  }
+
+  /**
+   * Create the folder which will host the tournament
+   * 
+   * @return true if the folder has been successfully created
+   */
+  private boolean createTournamentFolders() {
+    String folderToCreate = AppUtil.PATH_TO_TOURNAMENTS + newTournamentUI.getTournament().getTitle();
+    String folderSave = folderToCreate + "/" + AppUtil.PATH_TO_SAVE;
+    String folderExport = folderToCreate + "/" + AppUtil.PATH_TO_EXPORTS;
+
+    // Create the folder and check if everything is ok
+    if ((new File(folderToCreate)).mkdirs()) {
+      LOGGER.log(Level.INFO, "The folder " + folderToCreate + " has been created");
+      if ((new File(folderSave)).mkdirs()) {
+        LOGGER.log(Level.INFO, "The folder " + folderSave + " has been created");
+      } else {
+        LOGGER.log(Level.WARNING, "The folder " + folderSave + " has not been created");
       }
-    });
+      if ((new File(folderExport)).mkdirs()) {
+        LOGGER.log(Level.INFO, "The folder " + folderExport + " has been created");
+      } else {
+        LOGGER.log(Level.WARNING, "The folder " + folderExport + " has not been created");
+      }
+      return true;
+    }
+
+    LOGGER.log(Level.SEVERE, "The folder " + folderToCreate + " has not been created");
+    return false;
   }
 
 }

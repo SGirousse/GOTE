@@ -15,6 +15,10 @@
  */
 package com.gote.pojo;
 
+import org.dom4j.Element;
+
+import com.gote.util.TournamentXMLUtil;
+
 /**
  * 
  * Representation of game rules use to check if the game is valid or not.
@@ -26,17 +30,42 @@ public class TournamentRules {
   /** TAG used to retrieve game of the tournament */
   private String tag;
 
+  /** Basic komi to be used in the tournament */
   private String komi;
 
+  /** Board size */
   private String size;
 
+  /** Time system (e.g. "Japanese", "ING", ...) */
   private String timeSystem;
 
+  /** Main time */
   private String basicTime;
 
+  /** Byo-yomi duration */
   private String byoYomiDuration;
 
+  /** Number of byoyomi periods */
   private String numberOfByoYomi;
+
+  /**
+   * Transform rules to xml
+   * 
+   * @param pRoot element "Tournaments"
+   * @see TournamentXMLUtil
+   */
+  public void toXML(Element pRoot) {
+    // Create tournament rules element
+    Element rules = pRoot.addElement(TournamentXMLUtil.TAG_RULES);
+    // Add attributes
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_TAG, getTag());
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_KOMI, getKomi());
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_SIZE, getSize());
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_TIMESYSTEM, getTimeSystem());
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_BASICTIME, getBasicTime());
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_BYODURATION, getByoYomiDuration());
+    rules.addAttribute(TournamentXMLUtil.ATT_RULES_BYOPERIODS, getNumberOfByoYomi());
+  }
 
   /**
    * Tag getter

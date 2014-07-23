@@ -15,6 +15,10 @@
  */
 package com.gote.pojo;
 
+import org.dom4j.Element;
+
+import com.gote.util.TournamentXMLUtil;
+
 /**
  * 
  * Representation of a player
@@ -30,6 +34,21 @@ public class Player {
 
   /** Player rank */
   private String rank;
+
+  /**
+   * Transform player to XML
+   * 
+   * @param pRoot "Players" element
+   * @see TournamentXMLUtil
+   */
+  public void toXML(Element pRoot) {
+    // Create player element
+    Element player = pRoot.addElement(TournamentXMLUtil.TAG_PLAYER);
+    // Add its attributes
+    player.addAttribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO, getPseudo());
+    player.addAttribute(TournamentXMLUtil.ATT_PLAYER_RANK, getRank());
+    player.addAttribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME, getFirstname());
+  }
 
   /**
    * Pseudo getter

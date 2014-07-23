@@ -15,6 +15,13 @@
  */
 package com.gote.importexport;
 
-public abstract class ExportTournament {
+import com.gote.pojo.Tournament;
 
+public abstract class ExportTournament {
+  /**
+   * Export a Tournament
+   * 
+   * @param pTournament Tournament
+   */
+  public abstract void export(Tournament pTournament);
 }

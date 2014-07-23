@@ -15,6 +15,11 @@
  */
 package com.gote.importexport;
 
-public class ExportTournamentForOpenGotha extends ExportTournament {
+import com.gote.pojo.Tournament;
 
+public class ExportTournamentForOpenGotha extends ExportTournament {
+  @Override
+  public void export(Tournament pTournament) {
+
+  }
 }

@@ -15,6 +15,12 @@
  */
 package com.gote.importexport;
 
+import com.gote.pojo.Tournament;
+
 public class ExportTournamentAsExcel extends ExportTournament {
 
+  @Override
+  public void export(Tournament pTournament) {
+
+  }
 }

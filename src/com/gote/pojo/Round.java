@@ -21,7 +21,7 @@ import java.util.List;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 
-import com.gote.util.TournamentUtils;
+import com.gote.util.TournamentXMLUtil;
 
 /**
  * 
@@ -69,11 +69,24 @@ public class Round {
     setGameList(pGameList);
   }
 
-  public void addToXML(Element pRoot) {
-    Element round = pRoot.addElement(TournamentUtils.TAG_ROUND);
-    Element games = round.addElement(TournamentUtils.TAG_GAMES);
+  /**
+   * Transform Round to XML format
+   * 
+   * @param pRoot "Rounds" element
+   * @see TournamentXMLUtil
+   */
+  public void toXML(Element pRoot) {
+    // Create round element
+    Element round = pRoot.addElement(TournamentXMLUtil.TAG_ROUND);
+    // Add its attributes
+    round.addAttribute(TournamentXMLUtil.ATT_ROUND_NUMBER, new Integer(getNumber()).toString());
+    round.addAttribute(TournamentXMLUtil.ATT_ROUND_DATESTART, getDateStart().toString());
+    round.addAttribute(TournamentXMLUtil.ATT_ROUND_DATEEND, getDateEnd().toString());
+
+    // Add Games list
+    Element games = round.addElement(TournamentXMLUtil.TAG_GAMES);
     for (Game game : getGameList()) {
-      game.addToXML(games);
+      game.toXML(games);
     }
   }
 

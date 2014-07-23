@@ -38,6 +38,18 @@ public class AppUtil {
   /** Logo */
   public static final String APP_ICON_PATH = "resources/images/GOTE-icone.jpg";
 
+  /** Path tournaments */
+  public static final String PATH_TO_TOURNAMENTS = "tournaments/";
+
+  /** Path save */
+  public static final String PATH_TO_SAVE = "saving/";
+
+  /** Path logs */
+  public static final String PATH_TO_LOGS = "logs/";
+
+  /** Path exports */
+  public static final String PATH_TO_EXPORTS = "exports/";
+
   /**
    * Private constructor
    */

@@ -21,16 +21,17 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.json.JSONObject;
 
 import com.gote.util.Servers;
-import com.gote.util.TournamentUtils;
+import com.gote.util.TournamentXMLUtil;
 
 /**
  * 
@@ -39,9 +40,8 @@ import com.gote.util.TournamentUtils;
  * @author SGirousse
  */
 public class Tournament {
-
-  /** Unique tournament id */
-  private String id;
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(Tournament.class.getName());
 
   /** Tournament title */
   private String title;
@@ -62,7 +62,6 @@ public class Tournament {
    * Default constructor and initializations
    */
   public Tournament() {
-    setId("-1");
     setTitle(new String());
     setRounds(new ArrayList<Round>());
     setParticipantsList(new ArrayList<Player>());
@@ -70,32 +69,48 @@ public class Tournament {
     setTournamentRules(new TournamentRules());
   }
 
-  public void fromJSON() {
-
+  /**
+   * Save tournament in a new xml file
+   */
+  public void save() {
+    FileWriter writer;
+    try {
+      writer = new FileWriter(getTitle() + ".xml");
+      writer.write(toXML());
+      writer.flush();
+      writer.close();
+    } catch (IOException e) {
+      LOGGER.log(Level.SEVERE, "Tournament has not been saved", e);
+    }
   }
 
-  public String toJSON() {
-    JSONObject tournament = new JSONObject();
-
-    return tournament.toString();
-  }
-
-  public void save() throws IOException {
-    FileWriter writer = new FileWriter(getTitle() + ".xml");
-    writer.write(toXML());
-    writer.flush();
-    writer.close();
-  }
-
+  /**
+   * Transform Tournament in a formatted XML
+   * 
+   * @return XML to write as a String
+   */
   public String toXML() {
     // Create document
     Document doc = DocumentHelper.createDocument();
 
-    Element root = doc.addElement(TournamentUtils.TAG_TOURNAMENT);
-    Element rounds = root.addElement(TournamentUtils.TAG_ROUNDS);
+    // Create tournament element
+    Element root = doc.addElement(TournamentXMLUtil.TAG_TOURNAMENT);
+    // Add attributes
+    root.addAttribute(TournamentXMLUtil.ATT_TOURNAMENT_NAME, getTitle());
+    root.addAttribute(TournamentXMLUtil.ATT_TOURNAMENT_SERVER, getServerType());
 
+    // Add rules
+    getTournamentRules().toXML(root);
+
+    // Add players
+    Element players = root.addElement(TournamentXMLUtil.TAG_PLAYERS);
+    for (Player player : getParticipantsList()) {
+      player.toXML(players);
+    }
+    // Add rounds
+    Element rounds = root.addElement(TournamentXMLUtil.TAG_ROUNDS);
     for (Round round : getRounds()) {
-      round.addToXML(rounds);
+      round.toXML(rounds);
     }
 
     StringWriter out = new StringWriter(1024);
@@ -138,24 +153,6 @@ public class Tournament {
     }
     System.out.println("FAILURE");
     return null;
-  }
-
-  /**
-   * Id setter
-   * 
-   * @return String
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Id getter
-   * 
-   * @param pId String
-   */
-  public void setId(String pId) {
-    this.id = pId;
   }
 
   /**
