@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -282,7 +281,6 @@ public class NewTournamentUI extends JFrame implements WindowListener {
    */
   public void setRoundsTable() {
     List<Round> rounds = tournament.getRounds();
-    LOGGER.log(Level.INFO, "round a jouter");
     jRoundsTable.setRounds(rounds);
   }
 
