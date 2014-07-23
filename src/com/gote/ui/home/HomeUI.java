@@ -15,18 +15,36 @@
  */
 package com.gote.ui.home;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import com.gote.AppUtil;
 import com.gote.action.home.NewButtonAction;
+import com.gote.importexport.ImportTournament;
+import com.gote.importexport.ImportTournamentFromGOTE;
+import com.gote.pojo.Tournament;
+import com.gote.ui.tournament.TournamentUI;
 import com.gote.util.home.HomeUtil;
 
 /**
@@ -42,6 +60,9 @@ public class HomeUI extends JFrame implements WindowListener {
 
   /** Class logger */
   private static Logger LOGGER = Logger.getLogger(HomeUI.class.getName());
+
+  /** List of tournaments */
+  JTable jTableSavedTournament;
 
   /**
    * Default constructor
@@ -64,6 +85,7 @@ public class HomeUI extends JFrame implements WindowListener {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setContentPane(buildContentPanel());
     addWindowListener(this);
+    pack();
   }
 
   /**
@@ -73,11 +95,74 @@ public class HomeUI extends JFrame implements WindowListener {
    */
   private JPanel buildContentPanel() {
     JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
     JButton jButtonNewTournament = new JButton(new NewButtonAction(this, HomeUtil.BUTTON_LABEL_NEW_TOURNAMENT));
+
+    String[] header = { "Nom" };
+    jTableSavedTournament = new JTable(getExistingTournaments(), header);
+    final HomeUI homeUI = this;
+    jTableSavedTournament.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent me) {
+        JTable table = (JTable) me.getSource();
+        Point p = me.getPoint();
+        int row = table.rowAtPoint(p);
+        if (me.getClickCount() == 2) {
+          LOGGER.log(Level.INFO, "Open existing tournament");
+          setVisible(false);
+          TournamentUI tournamentUI = new TournamentUI(homeUI, loadTournament(table.getValueAt(row, 0).toString()));
+          tournamentUI.setVisible(true);
+        }
+      }
+    });
+
+    jButtonNewTournament.setAlignmentX(Component.CENTER_ALIGNMENT);
     panel.add(jButtonNewTournament);
+    panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    panel.add(Box.createHorizontalGlue());
+    panel.add(new JScrollPane(jTableSavedTournament), BorderLayout.CENTER);
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     return panel;
+  }
+
+  /**
+   * Get the list of the already existing tournaments
+   * 
+   * @return tournament list for JTable
+   */
+  public String[][] getExistingTournaments() {
+
+    String[][] tournamentsData = {};
+    List<String> tournamentTitles = new ArrayList<String>();
+
+    File[] list = new File(AppUtil.PATH_TO_TOURNAMENTS).listFiles();
+    if (list != null) {
+      for (int i = 0; i < list.length; i++) {
+        if (list[i].isDirectory()) {
+          tournamentTitles.add(list[i].getName());
+        }
+      }
+      tournamentsData = new String[tournamentTitles.size()][1];
+      for (int i = 0; i < tournamentTitles.size(); i++) {
+        tournamentsData[i][0] = tournamentTitles.get(i);
+      }
+    } else {
+      LOGGER.log(Level.INFO, "No existing tournament");
+    }
+    return tournamentsData;
+  }
+
+  /**
+   * Import tournament
+   * 
+   * @param folderName Tournament name used to name the folder containing it
+   * @return a Tournament instance
+   */
+  public Tournament loadTournament(String folderName) {
+    ImportTournament importTournament = new ImportTournamentFromGOTE();
+    return importTournament.createTournamentFromConfig(new File(AppUtil.PATH_TO_TOURNAMENTS + folderName + "/"
+        + AppUtil.PATH_TO_SAVE + folderName + ".xml"));
   }
 
   @Override
@@ -90,7 +175,7 @@ public class HomeUI extends JFrame implements WindowListener {
 
   @Override
   public void windowClosing(WindowEvent e) {
-    LOGGER.log(Level.INFO,"[END] Application closing");
+    LOGGER.log(Level.INFO, "[END] Application closing");
   }
 
   @Override

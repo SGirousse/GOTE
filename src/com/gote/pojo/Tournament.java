@@ -15,6 +15,7 @@
  */
 package com.gote.pojo;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,6 +31,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
+import com.gote.AppUtil;
 import com.gote.util.Servers;
 import com.gote.util.TournamentXMLUtil;
 
@@ -73,15 +75,21 @@ public class Tournament {
    * Save tournament in a new xml file
    */
   public void save() {
-    FileWriter writer;
+    // TODO check befor creation in order to copy older file before saving the tournament in its
+    // current state
+    File file = new File(AppUtil.PATH_TO_TOURNAMENTS + getTitle().trim() + "/" + AppUtil.PATH_TO_SAVE
+        + getTitle().trim() + ".xml");
+
+    FileWriter fileWriter;
+
     try {
-      writer = new FileWriter(getTitle() + ".xml");
-      writer.write(toXML());
-      writer.flush();
-      writer.close();
+      fileWriter = new FileWriter(file);
+      fileWriter.write(toXML());
+      fileWriter.close();
     } catch (IOException e) {
-      LOGGER.log(Level.SEVERE, "Tournament has not been saved", e);
+      LOGGER.log(Level.SEVERE, "Error during writing file " + file.getName(), e);
     }
+    LOGGER.log(Level.INFO, "File " + file.getName() + " saved");
   }
 
   /**
