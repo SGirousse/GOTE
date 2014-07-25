@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 
 import com.gote.ui.home.HomeUI;
 import com.gote.ui.newtournament.NewTournamentUI;
@@ -42,8 +43,8 @@ public class NewButtonAction extends AbstractAction {
   /** Home UI */
   private HomeUI homeUI;
 
-  public NewButtonAction(HomeUI pHomeUI, String pLabel) {
-    super(pLabel);
+  public NewButtonAction(HomeUI pHomeUI, String pLabel, Icon pIcon) {
+    super(pLabel, pIcon);
     homeUI = pHomeUI;
   }
 

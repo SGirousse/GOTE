@@ -106,7 +106,7 @@ public class NewTournamentUI extends JFrame implements WindowListener {
    */
   private void build() {
     setTitle(AppUtil.buildWindowTitle(NewTournamentUtil.WINDOW_TITLE));
-    ImageIcon img = new ImageIcon(AppUtil.APP_NAME);
+    ImageIcon img = new ImageIcon(AppUtil.APP_ICON_PATH);
     setIconImage(img.getImage());
     setSize(800, 700);
     setLocationRelativeTo(null);

@@ -65,7 +65,7 @@ public class TournamentUI extends JFrame implements WindowListener {
    */
   private void build() {
     setTitle(AppUtil.buildWindowTitle(TournamentUtil.WINDOW_TITLE, tournament.getTitle()));
-    ImageIcon img = new ImageIcon(AppUtil.APP_NAME);
+    ImageIcon img = new ImageIcon(AppUtil.APP_ICON_PATH);
     setIconImage(img.getImage());
     setSize(800, 700);
     setLocationRelativeTo(null);
@@ -82,13 +82,13 @@ public class TournamentUI extends JFrame implements WindowListener {
    */
   private JPanel buildContentPanel() {
     JPanel panel = new JPanel();
-    
+
     JButton jButtonUpdate = new JButton(new UpdateResultsButton(this, tournament, TournamentUtil.BUTTON_UPDATE_LABEL));
     JButton jButtonExport = new JButton(TournamentUtil.BUTTON_EXPORT_LABEL);
-    
+
     panel.add(jButtonUpdate);
     panel.add(jButtonExport);
-    
+
     return panel;
   }
 

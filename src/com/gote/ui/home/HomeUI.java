@@ -16,8 +16,10 @@
 package com.gote.ui.home;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,8 +37,10 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 
 import com.gote.AppUtil;
@@ -77,13 +81,14 @@ public class HomeUI extends JFrame implements WindowListener {
    */
   private void build() {
     setTitle(AppUtil.buildWindowTitle(HomeUtil.WINDOW_TITLE));
-    ImageIcon img = new ImageIcon(AppUtil.APP_NAME);
+    ImageIcon img = new ImageIcon(AppUtil.APP_ICON_PATH);
     setIconImage(img.getImage());
     setSize(400, 400);
     setLocationRelativeTo(null);
     setResizable(false);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setContentPane(buildContentPanel());
+    getContentPane().setBackground(Color.WHITE);
     addWindowListener(this);
     pack();
   }
@@ -97,9 +102,20 @@ public class HomeUI extends JFrame implements WindowListener {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-    JButton jButtonNewTournament = new JButton(new NewButtonAction(this, HomeUtil.BUTTON_LABEL_NEW_TOURNAMENT));
+    JLabel jLabelTitle = new JLabel("GOTE");
+    jLabelTitle.setFont(new Font("Arial", Font.BOLD, 60));
+    jLabelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+    JLabel jLabelName = new JLabel("Go Online Tournament Easy");
+    jLabelName.setFont(new Font("Arial", Font.BOLD, 15));
+    jLabelName.setAlignmentX(Component.CENTER_ALIGNMENT);
+    JLabel jLabelLoadGame = new JLabel("Ouvrir un tournoi existant : ");
+    jLabelLoadGame.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-    String[] header = { "Nom" };
+    ImageIcon img = new ImageIcon("resources/images/GOTE-button-white.jpg");
+    JButton jButtonNewTournament = new JButton(new NewButtonAction(this, HomeUtil.BUTTON_LABEL_NEW_TOURNAMENT, img));
+    jButtonNewTournament.setBackground(Color.WHITE);
+
+    String[] header = { "Charger un tournoi existant" };
     jTableSavedTournament = new JTable(getExistingTournaments(), header);
     final HomeUI homeUI = this;
     jTableSavedTournament.addMouseListener(new MouseAdapter() {
@@ -117,10 +133,23 @@ public class HomeUI extends JFrame implements WindowListener {
     });
 
     jButtonNewTournament.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(jLabelTitle);
+    panel.add(jLabelName);
+    panel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.LINE_START);
+    panel.add(Box.createRigidArea(new Dimension(0, 10)));
     panel.add(jButtonNewTournament);
     panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    panel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.LINE_START);
+    panel.add(Box.createRigidArea(new Dimension(0, 10)));
     panel.add(Box.createHorizontalGlue());
-    panel.add(new JScrollPane(jTableSavedTournament), BorderLayout.CENTER);
+    JScrollPane jScrollPane = new JScrollPane(jTableSavedTournament);
+    jScrollPane.setPreferredSize(new Dimension(350, 200 /*
+                                                         * getExistingTournaments().length * 16 +
+                                                         * 25
+                                                         */));
+    jScrollPane.setMaximumSize(new Dimension(350, 200 /* getExistingTournaments().length * 16 + 25 */));
+    jScrollPane.setMinimumSize(new Dimension(350, 200 /* getExistingTournaments().length * 16 + 25 */));
+    panel.add(jScrollPane, BorderLayout.CENTER);
     panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     return panel;
