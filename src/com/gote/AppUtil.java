@@ -30,7 +30,7 @@ public class AppUtil {
   public static final String APP_SHORTNAME = "GOTE";
 
   /** Version */
-  public static final String APP_VERSION = "0.3";
+  public static final String APP_VERSION = "0.4";
 
   /** Authors */
   public static final String APP_AUTHOR = "Simeon GIROUSSE - simeon[dot]girousse[at]gmail[dot]com";

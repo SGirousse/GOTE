@@ -15,11 +15,7 @@
  */
 package com.gote.importexport;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +32,6 @@ import com.gote.pojo.Player;
 import com.gote.pojo.Round;
 import com.gote.pojo.Tournament;
 import com.gote.pojo.TournamentRules;
-import com.gote.util.Servers;
 
 /**
  * 
@@ -63,7 +58,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
 
   /** Class logger */
   private static Logger LOGGER = Logger.getLogger(ImportTournamentFromOpenGotha.class.getName());
-  
+
   public static final String TAG_TOURNAMENT = "Tournament";
 
   public static final String TAG_PLAYERS = "Players";
@@ -123,13 +118,13 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
   @Override
   public Tournament createTournamentFromConfig(File pFile) {
 
-    LOGGER.log(Level.INFO,"A new tournament is going to be created from the file : "+pFile.getPath());
-    
+    LOGGER.log(Level.INFO, "A new tournament is going to be created from the file : " + pFile.getPath());
+
     Tournament tournament = new Tournament();
     String content = getFileContent(pFile);
 
     if (content == null) {
-      LOGGER.log(Level.SEVERE,"File \""+pFile.getPath()+"\" content is null");
+      LOGGER.log(Level.SEVERE, "File \"" + pFile.getPath() + "\" content is null");
       return null;
     }
 
@@ -138,7 +133,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     try {
       document = reader.read(new StringReader(content));
     } catch (DocumentException e) {
-      LOGGER.log(Level.SEVERE,"DocumentException, creation stopped : "+e);
+      LOGGER.log(Level.SEVERE, "DocumentException, creation stopped : " + e);
       return null;
     }
 
@@ -153,43 +148,6 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     }
   }
 
-  /**
-   * Read the file and returns its content
-   * 
-   * @param pFile File
-   * @return String the content
-   */
-  private String getFileContent(File pFile) {
-    String content = new String();
-    FileReader fileReader = null;
-
-    try {
-      fileReader = new FileReader(pFile);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    BufferedReader bufferedReader = new BufferedReader(fileReader);
-    String line = null;
-    try {
-      while ((line = bufferedReader.readLine()) != null) {
-        content += line;
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    try {
-      fileReader.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return content;
-  }
-
   public boolean initTournament(Tournament pTournament, Element pElementTournament) {
 
     boolean init = false;
@@ -202,7 +160,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     if (init) {
       init = initTournamentRules(pTournament, elTournamentRulesSet);
     } else {
-      LOGGER.log(Level.SEVERE,"While getting tournament parameters from open gotha file a problem occured.");
+      LOGGER.log(Level.SEVERE, "While getting tournament parameters from open gotha file a problem occured.");
       return false;
     }
 
@@ -210,13 +168,13 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
       elPlayers = pElementTournament.element(TAG_PLAYERS);
       init = elPlayers != null;
     } else {
-      LOGGER.log(Level.SEVERE,"During tournament rules initialization a problem occured.");
+      LOGGER.log(Level.SEVERE, "During tournament rules initialization a problem occured.");
       return false;
     }
     if (init) {
       init = initPlayers(pTournament, elPlayers);
     } else {
-      LOGGER.log(Level.SEVERE,"While getting players data from open gotha file a problem occured.");
+      LOGGER.log(Level.SEVERE, "While getting players data from open gotha file a problem occured.");
       return false;
     }
 
@@ -224,14 +182,14 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
       elGames = pElementTournament.element(TAG_GAMES);
       init = elGames != null;
     } else {
-      LOGGER.log(Level.SEVERE,"During players initialization a problem occured.");
+      LOGGER.log(Level.SEVERE, "During players initialization a problem occured.");
       return false;
     }
 
     if (init) {
       init = initRounds(pTournament, elGames);
     } else {
-      LOGGER.log(Level.SEVERE,"While getting games data from open gotha file a problem occured.");
+      LOGGER.log(Level.SEVERE, "While getting games data from open gotha file a problem occured.");
       return false;
     }
 
@@ -246,7 +204,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
    * @return boolean, true if everything worked as expected
    */
   public boolean initTournamentRules(Tournament pTournament, Element pElementTournamentRulesSet) {
-    LOGGER.log(Level.INFO,"Tournament rules initialization");
+    LOGGER.log(Level.INFO, "Tournament rules initialization");
     boolean init = true;
     Element elementGeneralParameters = pElementTournamentRulesSet.element(TAG_GENERAL_PARAMETER_SET);
     String komi = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI).getValue();
@@ -287,7 +245,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
    * @return boolean, true if everything worked as expected
    */
   public boolean initPlayers(Tournament pTournament, Element pElementPlayers) {
-    LOGGER.log(Level.INFO,"Players initialization");
+    LOGGER.log(Level.INFO, "Players initialization");
     boolean init = false;
     @SuppressWarnings("unchecked")
     List<Element> listOfPlayers = (List<Element>) pElementPlayers.elements(TAG_PLAYER);
@@ -311,13 +269,13 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
 
   /**
    * Init rounds and games
-   *
+   * 
    * @param pTournament Tournament being builded
    * @param pElementGames Element in OpenGotha document
    * @return boolean, true if everything worked as expected
    */
   public boolean initRounds(Tournament pTournament, Element pElementGames) {
-    LOGGER.log(Level.INFO,"Rounds initialization");
+    LOGGER.log(Level.INFO, "Rounds initialization");
     boolean init = false;
     @SuppressWarnings("unchecked")
     List<Element> listOfGames = (List<Element>) pElementGames.elements(TAG_GAME);
@@ -339,26 +297,28 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
         if (roundNumberAsText != null && !roundNumberAsText.isEmpty()) {
           roundPlacement = getRoundPlacement(tournamentRounds, new Integer(roundNumberAsText));
         } else {
-          LOGGER.log(Level.WARNING, "No round numbre in configuration file. Line is : "+gameElement.toString());
+          LOGGER.log(Level.WARNING, "No round numbre in configuration file. Line is : " + gameElement.toString());
         }
 
         if (roundPlacement > -1) {
           games = tournamentRounds.get(roundPlacement).getGameList();
         } else {
 
-          LOGGER.log(Level.INFO,"Round "+roundNumberAsText+" is new and will be created.");
+          LOGGER.log(Level.INFO, "Round " + roundNumberAsText + " is new and will be created.");
           round.setNumber(new Integer(roundNumberAsText));
         }
 
         Game game = new Game();
 
-        Player black = pTournament.getParticipantByName(gameElement.attribute(ATTRIBUTE_GAME_BLACK_PLAYER).getValue());
-        Player white = pTournament.getParticipantByName(gameElement.attribute(ATTRIBUTE_GAME_WHITE_PLAYER).getValue());
+        Player black = pTournament.getParticipantByNameOpenGotha(gameElement.attribute(ATTRIBUTE_GAME_BLACK_PLAYER)
+            .getValue());
+        Player white = pTournament.getParticipantByNameOpenGotha(gameElement.attribute(ATTRIBUTE_GAME_WHITE_PLAYER)
+            .getValue());
         String result = gameElement.attribute(ATTRIBUTE_GAME_RESULT).getValue();
         String handicap = gameElement.attribute(ATTRIBUTE_GAME_HANDICAP).getValue();
 
         game.setBlack(black);
-        game.setBlack(white);
+        game.setWhite(white);
         game.setResult(result);
         game.setHandicap(handicap);
 

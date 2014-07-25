@@ -15,6 +15,9 @@
  */
 package com.gote.pojo;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.dom4j.Element;
 
 import com.gote.util.TournamentXMLUtil;
@@ -26,6 +29,10 @@ import com.gote.util.TournamentXMLUtil;
  * @author SGirousse
  */
 public class Player {
+
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(Player.class.getName());
+
   /** Player pseudo */
   private String pseudo;
 
@@ -48,6 +55,32 @@ public class Player {
     player.addAttribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO, getPseudo());
     player.addAttribute(TournamentXMLUtil.ATT_PLAYER_RANK, getRank());
     player.addAttribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME, getFirstname());
+  }
+
+  /**
+   * Load Round from XML
+   * 
+   * @param pRoot Element
+   */
+  public void fromXML(Element pRoot) {
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO) != null) {
+      setPseudo(pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_PLAYER_PSEUDO + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_RANK) != null) {
+      setRank(pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_RANK).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_PLAYER_RANK + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME) != null) {
+      setFirstname(pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_PLAYER_FIRSTNAME + " is null");
+    }
   }
 
   /**

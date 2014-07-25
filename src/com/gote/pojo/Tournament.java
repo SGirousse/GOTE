@@ -140,26 +140,102 @@ public class Tournament {
     return out.toString();
   }
 
-  public void fromXML() {
+  /**
+   * Load Tournament from XML
+   * 
+   * @param pRoot Tournament element
+   */
+  public void fromXML(Element pRoot) {
+    if (pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_NAME) != null) {
+      setTitle(pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_NAME).getValue());
+    } else {
+      LOGGER.log(Level.SEVERE, "The attribute " + TournamentXMLUtil.ATT_TOURNAMENT_NAME + " is null");
+    }
 
+    if (pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_SERVER) != null) {
+      setServerType(pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_SERVER).getValue());
+    } else {
+      LOGGER.log(Level.SEVERE, "The attribute " + TournamentXMLUtil.ATT_TOURNAMENT_NAME + " is null");
+    }
+
+    Element elementTournamentRules = pRoot.element(TournamentXMLUtil.TAG_RULES);
+    if (elementTournamentRules != null) {
+      TournamentRules tournamentRules = new TournamentRules();
+      tournamentRules.fromXML(elementTournamentRules);
+      setTournamentRules(tournamentRules);
+    } else {
+      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_RULES + " is null");
+    }
+
+    Element elementPlayers = pRoot.element(TournamentXMLUtil.TAG_PLAYERS);
+    if (elementPlayers != null) {
+      List<Player> players = new ArrayList<Player>();
+      @SuppressWarnings("unchecked")
+      List<Element> playersElements = elementPlayers.elements(TournamentXMLUtil.TAG_PLAYER);
+      if (playersElements != null && !playersElements.isEmpty()) {
+        for (Element playerElement : playersElements) {
+          Player player = new Player();
+          player.fromXML(playerElement);
+          players.add(player);
+        }
+      } else {
+        LOGGER.log(Level.WARNING, "No player has been found");
+      }
+      setParticipantsList(players);
+    } else {
+      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_ROUNDS + " is null");
+    }
+
+    Element elementRounds = pRoot.element(TournamentXMLUtil.TAG_ROUNDS);
+    if (elementRounds != null) {
+      List<Round> rounds = new ArrayList<Round>();
+      @SuppressWarnings("unchecked")
+      List<Element> roundsElements = elementRounds.elements(TournamentXMLUtil.TAG_ROUND);
+      if (roundsElements != null && !roundsElements.isEmpty()) {
+        for (Element roundElement : roundsElements) {
+          Round round = new Round();
+          round.fromXML(roundElement, this);
+          rounds.add(round);
+        }
+      } else {
+        LOGGER.log(Level.WARNING, "No round has been found");
+      }
+      setRounds(rounds);
+    } else {
+      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_ROUNDS + " is null");
+    }
+  }
+
+  /**
+   * Get a player from participants list with they name specialized for opengotha. If none is
+   * found, null is returned.
+   * 
+   * @param pName Pseudo of player
+   * @return Player
+   */
+  public Player getParticipantByNameOpenGotha(String pName) {
+    for (Player player : getParticipantsList()) {
+      if (pName.equalsIgnoreCase(player.getPseudo() + player.getFirstname())) {
+        return player;
+      }
+    }
+    LOGGER.log(Level.WARNING, "No participant found with name " + pName);
+    return null;
   }
 
   /**
    * Get a player from participants list with they name. If none is found, null is returned.
    * 
-   * @param name Pseudo of player
+   * @param pName Pseudo of player
    * @return Player
    */
-  public Player getParticipantByName(String name) {
+  public Player getParticipantByName(String pName) {
     for (Player player : getParticipantsList()) {
-
-      // System.out.println("SEARCH *** compare " + player.getPseudo() + player.getFirstname());
-      // System.out.println("SEARCH *** with    " + name);
-      if (name.equalsIgnoreCase(player.getPseudo() + player.getFirstname())) {
+      if (pName.equalsIgnoreCase(player.getPseudo())) {
         return player;
       }
     }
-    System.out.println("FAILURE");
+    LOGGER.log(Level.WARNING, "No participant found with name " + pName);
     return null;
   }
 
@@ -255,72 +331,3 @@ public class Tournament {
   }
 
 }
-
-/**
- * public String toXML() {
- * 
- * // Create document Document doc = DocumentHelper.createDocument();
- * 
- * // Add first tag Element root = doc.addElement(SavedSearchCustomHelper.TAG_ELEMENT_SEARCH);
- * 
- * // Add all the elements under main tag Element advSearch =
- * root.addElement(SavedSearchCustomHelper.TAG_ELEMENT_ADVSEARCH);
- * 
- * // Add each saved advanced search elements if (getTitle() != null) {
- * advSearch.addElement(SavedSearchCustomHelper.TAG_ELEMENT_TITLE).addText(getTitle()); } if
- * (getQuery() != null) {
- * advSearch.addElement(SavedSearchCustomHelper.TAG_ELEMENT_QUERY).addText(getQuery()); } if
- * (getTerms() != null) {
- * advSearch.addElement(SavedSearchCustomHelper.TAG_ELEMENT_TERMS).addText(getTerms()); } if
- * (getAuthor() != null) {
- * advSearch.addElement(SavedSearchCustomHelper.TAG_ELEMENT_AUTHOR).addText(getAuthor()); } if
- * (isGlobalSearch != null) {
- * advSearch.addElement(SavedSearchCustomHelper.TAG_ELEMENT_IS_GLOBAL_SEARCH).addText(
- * Boolean.toString(getIsGlobalSearch())); } else { // Default behavior
- * advSearch.addElement(SavedSearchCustomHelper
- * .TAG_ELEMENT_IS_GLOBAL_SEARCH).addText(Boolean.toString(false)); }
- * 
- * StringWriter out = new StringWriter(1024); XMLWriter writer; try { writer = new
- * XMLWriter(OutputFormat.createPrettyPrint()); } catch (UnsupportedEncodingException e) {
- * LOGGER.error("Problem while getting writer : " + e); return null; } writer.setWriter(out); try {
- * writer.write(doc); } catch (IOException e) { LOGGER.error("Error while writing into document : "
- * + e); }
- * 
- * // Return the friendly XML return out.toString();
- * 
- * }
- * 
- * @Override public AbstractSavedSearchCustom fromXML(String pXML) {
- * 
- *           // Reader for create doc from xml
- * 
- *           // Get the root element Element rootElement = document.getRootElement();
- * 
- *           // Get advsearch element Element advSearch =
- *           rootElement.element(SavedSearchCustomHelper.TAG_ELEMENT_ADVSEARCH);
- * 
- *           // Get title Element titleElement =
- *           advSearch.element(SavedSearchCustomHelper.TAG_ELEMENT_TITLE); if (titleElement !=
- *           null) { this.title = titleElement.getText(); }
- * 
- *           // Get keywords Element termsElement =
- *           advSearch.element(SavedSearchCustomHelper.TAG_ELEMENT_TERMS); if (termsElement !=
- *           null) { this.terms = termsElement.getText(); }
- * 
- *           // Get author Element authorElement =
- *           advSearch.element(SavedSearchCustomHelper.TAG_ELEMENT_AUTHOR); if (authorElement !=
- *           null) { this.author = authorElement.getText(); }
- * 
- *           // Get query content Element queryElement =
- *           advSearch.element(SavedSearchCustomHelper.TAG_ELEMENT_QUERY); if (queryElement !=
- *           null) { this.query = queryElement.getText(); }
- * 
- *           // Get isGlobalActive param Element isGlobalSearchElement =
- *           advSearch.element(SavedSearchCustomHelper.TAG_ELEMENT_AUTHOR); if
- *           (isGlobalSearchElement != null) { this.isGlobalSearch =
- *           Boolean.parseBoolean(isGlobalSearchElement.getText()); }
- * 
- *           return this;
- * 
- *           }
- */

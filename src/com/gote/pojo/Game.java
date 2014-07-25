@@ -15,6 +15,9 @@
  */
 package com.gote.pojo;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.dom4j.Element;
 
 import com.gote.util.TournamentXMLUtil;
@@ -26,6 +29,10 @@ import com.gote.util.TournamentXMLUtil;
  * @author SGirousse
  */
 public class Game {
+
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(Game.class.getName());
+
   private Player white;
 
   private Player black;
@@ -66,6 +73,52 @@ public class Game {
     game.addAttribute(TournamentXMLUtil.ATT_GAME_KOMI, getKomi());
     game.addAttribute(TournamentXMLUtil.ATT_GAME_HANDICAP, getHandicap());
     game.addAttribute(TournamentXMLUtil.ATT_GAME_RESULT, getResult());
+  }
+
+  /**
+   * Load Game from XML
+   * 
+   * @param pRoot Element
+   * @param pTournament Element
+   */
+  public void fromXML(Element pRoot, Tournament pTournament) {
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER) != null) {
+      setBlack(pTournament.getParticipantByName(pRoot.attribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_BLACKPLAYER + " is null");
+
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER) != null) {
+      setWhite(pTournament.getParticipantByName(pRoot.attribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_WHITEPLAYER + " is null");
+
+    }
+    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_URL) != null) {
+      setGameUrl(pRoot.attribute(TournamentXMLUtil.ATT_GAME_URL).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_URL + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_HANDICAP) != null) {
+      setHandicap(pRoot.attribute(TournamentXMLUtil.ATT_GAME_HANDICAP).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_HANDICAP + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_RESULT) != null) {
+      setResult(pRoot.attribute(TournamentXMLUtil.ATT_GAME_RESULT).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_RESULT + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_KOMI) != null) {
+      setKomi(pRoot.attribute(TournamentXMLUtil.ATT_GAME_KOMI).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_KOMI + " is null");
+    }
   }
 
   public Player getWhite() {

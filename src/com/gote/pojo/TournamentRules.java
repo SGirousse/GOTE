@@ -15,6 +15,9 @@
  */
 package com.gote.pojo;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.dom4j.Element;
 
 import com.gote.util.TournamentXMLUtil;
@@ -26,6 +29,9 @@ import com.gote.util.TournamentXMLUtil;
  * @author SGirousse
  */
 public class TournamentRules {
+
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(TournamentRules.class.getName());
 
   /** TAG used to retrieve game of the tournament */
   private String tag;
@@ -65,6 +71,55 @@ public class TournamentRules {
     rules.addAttribute(TournamentXMLUtil.ATT_RULES_BASICTIME, getBasicTime());
     rules.addAttribute(TournamentXMLUtil.ATT_RULES_BYODURATION, getByoYomiDuration());
     rules.addAttribute(TournamentXMLUtil.ATT_RULES_BYOPERIODS, getNumberOfByoYomi());
+  }
+
+  /**
+   * Load TournamentRules from XML
+   * 
+   * @param pRoot Element
+   */
+  public void fromXML(Element pRoot) {
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_TAG) != null) {
+      setTag(pRoot.attribute(TournamentXMLUtil.ATT_RULES_TAG).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_TAG + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_KOMI) != null) {
+      setKomi(pRoot.attribute(TournamentXMLUtil.ATT_RULES_KOMI).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_KOMI + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_SIZE) != null) {
+      setSize(pRoot.attribute(TournamentXMLUtil.ATT_RULES_SIZE).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_SIZE + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_TIMESYSTEM) != null) {
+      setTimeSystem(pRoot.attribute(TournamentXMLUtil.ATT_RULES_TIMESYSTEM).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_TIMESYSTEM + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_BASICTIME) != null) {
+      setBasicTime(pRoot.attribute(TournamentXMLUtil.ATT_RULES_BASICTIME).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_BASICTIME + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_BYODURATION) != null) {
+      setByoYomiDuration(pRoot.attribute(TournamentXMLUtil.ATT_RULES_BYODURATION).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_BYODURATION + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_RULES_BYOPERIODS) != null) {
+      setNumberOfByoYomi(pRoot.attribute(TournamentXMLUtil.ATT_RULES_BYOPERIODS).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_RULES_BYOPERIODS + " is null");
+    }
   }
 
   /**

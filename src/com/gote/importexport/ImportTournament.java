@@ -15,10 +15,52 @@
  */
 package com.gote.importexport;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import com.gote.pojo.Tournament;
 
 public abstract class ImportTournament {
   public abstract Tournament createTournamentFromConfig(File file);
+
+  /**
+   * Read the file and returns its content
+   * 
+   * @param pFile File
+   * @return String the content
+   */
+  protected String getFileContent(File pFile) {
+    String content = new String();
+    FileReader fileReader = null;
+
+    try {
+      fileReader = new FileReader(pFile);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    BufferedReader bufferedReader = new BufferedReader(fileReader);
+    String line = null;
+    try {
+      while ((line = bufferedReader.readLine()) != null) {
+        content += line;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    try {
+      fileReader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return content;
+  }
+
 }

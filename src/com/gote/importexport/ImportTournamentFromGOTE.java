@@ -16,8 +16,14 @@
 package com.gote.importexport;
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import com.gote.pojo.Tournament;
 
@@ -29,6 +35,38 @@ public class ImportTournamentFromGOTE extends ImportTournament {
   @Override
   public Tournament createTournamentFromConfig(File pFile) {
     LOGGER.log(Level.INFO, "Loading tournament from file " + pFile);
-    return new Tournament();
+
+    Tournament tournament = new Tournament();
+    String content = getFileContent(pFile);
+    if (content == null) {
+      LOGGER.log(Level.SEVERE, "File \"" + pFile.getPath() + "\" content is null");
+      return null;
+    }
+
+    SAXReader reader = new SAXReader();
+    Document document;
+    try {
+      document = reader.read(new StringReader(content));
+    } catch (DocumentException e) {
+      LOGGER.log(Level.SEVERE, "DocumentException, creation stopped : " + e);
+      return null;
+    }
+
+    Element pElementTournament = document.getRootElement();
+
+    boolean initSuccess = initTournament(tournament, pElementTournament);
+
+    if (initSuccess) {
+      return tournament;
+    } else {
+      return null;
+    }
+  }
+
+  private boolean initTournament(Tournament pTournament, Element pElementTournament) {
+
+    pTournament.fromXML(pElementTournament);
+
+    return true;
   }
 }

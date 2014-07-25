@@ -17,6 +17,8 @@ package com.gote.pojo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.dom4j.Element;
 import org.joda.time.DateTime;
@@ -31,6 +33,9 @@ import com.gote.util.TournamentXMLUtil;
  * @author SGirousse
  */
 public class Round {
+
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(Round.class.getName());
 
   /** Round number */
   private int number;
@@ -87,6 +92,51 @@ public class Round {
     Element games = round.addElement(TournamentXMLUtil.TAG_GAMES);
     for (Game game : getGameList()) {
       game.toXML(games);
+    }
+  }
+
+  /**
+   * Load Round from XML
+   * 
+   * @param pRoot Element
+   * @param pTournament Tournament
+   */
+  public void fromXML(Element pRoot, Tournament pTournament) {
+    if (pRoot.attribute(TournamentXMLUtil.ATT_ROUND_NUMBER) != null) {
+      setNumber(Integer.parseInt(pRoot.attribute(TournamentXMLUtil.ATT_ROUND_NUMBER).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_ROUND_NUMBER + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATESTART) != null) {
+      setDateStart(new DateTime(pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATESTART).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_ROUND_DATESTART + " is null");
+    }
+
+    if (pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATEEND) != null) {
+      setDateEnd(new DateTime(pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATEEND).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_ROUND_DATEEND + " is null");
+    }
+
+    Element elementGames = pRoot.element(TournamentXMLUtil.TAG_GAMES);
+    if (elementGames != null) {
+      List<Game> games = new ArrayList<Game>();
+      @SuppressWarnings("unchecked")
+      List<Element> gamesElements = elementGames.elements(TournamentXMLUtil.TAG_GAME);
+      if (gamesElements != null && !gamesElements.isEmpty()) {
+        for (Element gameElement : gamesElements) {
+          Game game = new Game();
+          game.fromXML(gameElement, pTournament);
+          games.add(game);
+        }
+      } else {
+        LOGGER.log(Level.WARNING, "No round has been found");
+      }
+      setGameList(games);
+    } else {
+      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_GAMES + " is null");
     }
   }
 

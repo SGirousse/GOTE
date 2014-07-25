@@ -15,6 +15,7 @@
  */
 package com.gote.importexport;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.gote.pojo.Tournament;
@@ -32,6 +33,7 @@ public class ExportTournamentForGOTE extends ExportTournament {
 
   @Override
   public void export(Tournament pTournament) {
+    LOGGER.log(Level.INFO, "Export tournament " + pTournament.getTitle() + " in GOTE format is starting");
     pTournament.save();
 
     // TODO check befor creation in order to copy older file before saving the tournament in its

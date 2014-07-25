@@ -39,13 +39,13 @@ public class TournamentManager {
    * @param args String[]
    */
   public static void main(String[] args) {
-    LOGGER.log(Level.INFO,"[START] Application starting");
+    LOGGER.log(Level.INFO, "[START] Application starting");
     TournamentManager tournamentManager = new TournamentManager();
     tournamentManager.startUI();
   }
 
   private void startUI() {
-    LOGGER.log(Level.INFO,"Starting the UI \"HomeUI\"");
+    LOGGER.log(Level.INFO, "Starting the UI \"HomeUI\"");
     // Start the application with the main ui
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
