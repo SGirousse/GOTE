@@ -87,15 +87,14 @@ public class Game {
       setBlack(pTournament.getParticipantByName(pRoot.attribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER).getValue()));
     } else {
       LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_BLACKPLAYER + " is null");
-
     }
 
     if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER) != null) {
       setWhite(pTournament.getParticipantByName(pRoot.attribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER).getValue()));
     } else {
       LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_WHITEPLAYER + " is null");
-
     }
+
     if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_URL) != null) {
       setGameUrl(pRoot.attribute(TournamentXMLUtil.ATT_GAME_URL).getValue());
     } else {

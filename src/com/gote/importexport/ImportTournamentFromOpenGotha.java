@@ -77,9 +77,9 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
 
   public static final String ATTRIBUTE_GAME_ROUND = "roundNumber";
 
-  public static final String ATTRIBUTE_GAME_WHITE_PLAYER = "blackPlayer";
+  public static final String ATTRIBUTE_GAME_WHITE_PLAYER = "whitePlayer";
 
-  public static final String ATTRIBUTE_GAME_BLACK_PLAYER = "whitePlayer";
+  public static final String ATTRIBUTE_GAME_BLACK_PLAYER = "blackPlayer";
 
   public static final String ATTRIBUTE_GAME_HANDICAP = "handicap";
 
