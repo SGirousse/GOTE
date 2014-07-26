@@ -15,14 +15,19 @@
  */
 package com.gote.ui.tournament;
 
+import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import com.gote.AppUtil;
 import com.gote.action.tournament.UpdateResultsButton;
@@ -47,6 +52,9 @@ public class TournamentUI extends JFrame implements WindowListener {
   /** Tournament managed */
   private Tournament tournament;
 
+  /** Log Area */
+  private JTextArea jTextAreaLog;
+
   /**
    * Default constructor
    * 
@@ -67,12 +75,13 @@ public class TournamentUI extends JFrame implements WindowListener {
     setTitle(AppUtil.buildWindowTitle(TournamentUtil.WINDOW_TITLE, tournament.getTitle()));
     ImageIcon img = new ImageIcon(AppUtil.APP_ICON_PATH);
     setIconImage(img.getImage());
-    setSize(800, 700);
+    setSize(800, 600);
     setLocationRelativeTo(null);
     setResizable(false);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setContentPane(buildContentPanel());
     addWindowListener(this);
+    pack();
   }
 
   /**
@@ -82,14 +91,42 @@ public class TournamentUI extends JFrame implements WindowListener {
    */
   private JPanel buildContentPanel() {
     JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+
+    jTextAreaLog = new JTextArea();
+    jTextAreaLog.setLineWrap(true);
+    jTextAreaLog.setWrapStyleWord(true);
+    JScrollPane jScrollPane = new JScrollPane(jTextAreaLog);
+    jScrollPane.setPreferredSize(new Dimension(620, 300));
+    jScrollPane.setMaximumSize(new Dimension(620, 300));
+    jScrollPane.setMinimumSize(new Dimension(620, 300));
 
     JButton jButtonUpdate = new JButton(new UpdateResultsButton(this, tournament, TournamentUtil.BUTTON_UPDATE_LABEL));
     JButton jButtonExport = new JButton(TournamentUtil.BUTTON_EXPORT_LABEL);
+    JButton jButtonAddToClip = new JButton("<html><center>Copier dans le presse-papier</center></html>");
 
-    panel.add(jButtonUpdate);
-    panel.add(jButtonExport);
+    JPanel jPanelLogs = new JPanel();
+    jPanelLogs.setLayout(new BoxLayout(jPanelLogs, BoxLayout.LINE_AXIS));
+    jPanelLogs.setPreferredSize(new Dimension(750, 350));
+    jPanelLogs.setMaximumSize(new Dimension(750, 350));
+    jPanelLogs.setMinimumSize(new Dimension(750, 350));
+
+    jPanelLogs.setBorder(BorderFactory.createTitledBorder("Logs"));
+    jPanelLogs.add(jScrollPane);
+    jPanelLogs.add(jButtonAddToClip);
+
+    JPanel jPanelButtons = new JPanel();
+    jPanelButtons.add(jButtonUpdate);
+    jPanelButtons.add(jButtonExport);
+
+    panel.add(jPanelButtons);
+    panel.add(jPanelLogs);
 
     return panel;
+  }
+
+  public JTextArea getJTextAreaLog() {
+    return jTextAreaLog;
   }
 
   @Override
