@@ -19,9 +19,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JTextArea;
 
 import org.joda.time.DateTime;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.gote.downloader.GameDownloader;
 import com.gote.pojo.Game;
@@ -40,11 +46,14 @@ public class KGSDownloader extends GameDownloader {
   /** Const waiting time */
   private static final int WAITING_TIME = 5000;
 
+  /** Class logger */
+  private static Logger LOGGER = Logger.getLogger(KGSDownloader.class.getName());
+
   /** Map of players <-> Document available */
   private Map<String, Document> playersArchives;
 
-  public KGSDownloader(Tournament pTournament) {
-    super(pTournament);
+  public KGSDownloader(Tournament pTournament, JTextArea pJTextArea) {
+    super(pTournament, pJTextArea);
   }
 
   @Override
@@ -58,23 +67,23 @@ public class KGSDownloader extends GameDownloader {
         // is temporary stored
         Document archivePage = null;
 
-        System.out.println(game.getWhite().getRank());
-        System.out.println(game.getResult());
-
         if (playersArchives.get(game.getWhite().getPseudo()) != null) {
           archivePage = playersArchives.get(game.getWhite().getPseudo());
+          log(Level.INFO, "Game archive from white " + game.getWhite().getPseudo());
         } else if (playersArchives.get(game.getBlack().getPseudo()) != null) {
+          log(Level.INFO, "Game archive from black " + game.getBlack().getPseudo());
           archivePage = playersArchives.get(game.getBlack().getPseudo());
         } else {
           // Get the archives and update games
-          // archivePage = getPlayerArchive(game.getWhite().getPseudo(), startDate, endDate);
-          // if (archivePage != null) {
-          // playersArchives.put(game.getWhite().getPseudo(), archivePage);
-          // }
+          archivePage = getPlayerArchive(game.getWhite().getPseudo(), startDate, endDate);
+          log(Level.INFO, "Archive page builded  with white pseudo " + game.getWhite().getPseudo());
+          if (archivePage != null) {
+            playersArchives.put(game.getWhite().getPseudo(), archivePage);
+          }
         }
 
         if (archivePage == null) {
-          System.out.println("ERROR ** an error occured, no update possible");
+          log(Level.SEVERE, "An error occured, no update possible");
           continue;
         }
         // Finally update
@@ -85,7 +94,6 @@ public class KGSDownloader extends GameDownloader {
 
   @Override
   public boolean checkGameAccessAvailability() {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -93,7 +101,7 @@ public class KGSDownloader extends GameDownloader {
     List<Game> listGames = new ArrayList<Game>();
     ArchivePageUrlBuilder archivePageUrlBuilder;
 
-    ArchivePageManager archivePageManager;
+    ArchivePageManager archivePageManager = new ArchivePageManager();
 
     // Found the maximum checkable year and month to avoid checking inexistant page (time lost and
     // more exception possibilities)
@@ -112,9 +120,12 @@ public class KGSDownloader extends GameDownloader {
       minEndYear = today.getYear();
     }
 
+    log(Level.FINE, "date : " + pStartDate);
+    log(Level.FINE, "date : " + pEndDate);
     // For each year until the end year or the end of the current year
     for (int year = pStartDate.getYear(); year <= minEndYear; year++) {
 
+      log(Level.FINE, "" + year);
       // Found intervals in order to avoid time lost and inexistant pages access
       int firstMonth = 1;
       int lastMonth = 13;
@@ -126,7 +137,8 @@ public class KGSDownloader extends GameDownloader {
       }
 
       // For each month
-      for (int month = firstMonth; month < lastMonth; month++) {
+      for (int month = firstMonth; month <= lastMonth; month++) {
+        log(Level.FINE, "mois " + month);
         // Wait for a amount of time, then KGS will not block the access
         try {
           Thread.sleep(WAITING_TIME);
@@ -136,13 +148,62 @@ public class KGSDownloader extends GameDownloader {
         archivePageUrlBuilder = new ArchivePageUrlBuilder(pPlayer, new Integer(year).toString(),
             new Integer(month).toString());
         archivePageManager = new ArchivePageManager(archivePageUrlBuilder.getUrl());
-        return archivePageManager.getArchivePage();
       }
+
+      return archivePageManager.getArchivePage();
     }
     return null;
   }
 
   private void retrieveAndUpdateGame(Game pGame, Document pPlayerArchivePage) {
+    Elements tableRows = pPlayerArchivePage.select("tr");
+
+    for (Element e : tableRows) {
+      LOGGER.log(Level.INFO, "[TRACE] New row checked " + e.toString());
+
+      // "Visible", "Blanc", "Noir", "Genre", "Debutee le", "Type", "Resultat"
+      Elements tableCells = e.getElementsByTag("td");
+
+      if (tableCells != null && tableCells.size() > 0) {
+        String gameUrl = isPublicGame(tableCells.first());
+
+        // May check with time if you can leave or continue
+        if (gameUrl != null && !gameUrl.isEmpty()) {
+          if (gameUrl.contains(pGame.getBlack().getPseudo()) && gameUrl.contains(pGame.getWhite().getPseudo())) {
+            System.out.println("Game : " + tableCells.toString());
+            pGame.setGameUrl(gameUrl);
+            // File sgf = new File("KGSTM-Test1");
+            // URL url = new URL(gameUrl);
+            // FileUtils.copyURLToFile(url,sgf);
+          }
+        } else {
+          log(Level.INFO, "La partie " + tableCells
+              + " n'est pas visible ou un probleme a eu lieu lors de la recuperation de l'url");
+        }
+      } else {
+        log(Level.INFO, "Un probleme a empeche l'analyse de la partie " + e);
+      }
+
+    }
+  }
+
+  /**
+   * Check if a game is public, if yes, then the URL of that game will be sent back.
+   * 
+   * @param pCell Element which represents the first KGS archives column
+   * @return link of the SGF or null
+   */
+  public String isPublicGame(Element pCell) {
+    Elements a = pCell.getElementsByTag("a");
+
+    if (a != null && a.size() > 0) {
+      // Check if it is a visible game
+      if (a.html().equals(KGSUtils.KGS_TAG_FR_YES)) {
+        return a.attr("href");
+      }
+    }
+
+    return null;
   }
 
   private DateTime getStartDate(Round pRound) {
@@ -150,7 +211,7 @@ public class KGSDownloader extends GameDownloader {
     if (startDate == null || startDate == new DateTime(1999, 1, 1, 0, 0)) {
       // startDate = tournament.getStartDate();
       if (startDate == null) {
-        System.out.println("WARNING ** No start date, archives will be fetched since 01/01/2000. This will be long.");
+        log(Level.WARNING, "No start date, archives will be fetched since 01/01/2000. This will be long.");
         startDate = new DateTime(2000, 1, 1, 0, 0);
       }
     }
@@ -166,5 +227,11 @@ public class KGSDownloader extends GameDownloader {
       }
     }
     return endDate;
+  }
+
+  @Override
+  protected void log(Level pLogLevel, String pLogText) {
+    super.log(pLogLevel, pLogText);
+    LOGGER.log(pLogLevel, pLogText);
   }
 }

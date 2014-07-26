@@ -48,7 +48,7 @@ public class UpdateResultsButton extends AbstractAction {
   public void actionPerformed(ActionEvent pActionEvent) {
     GameDownloader gameDownloader = null;
     if (tournament.getServerType().equals(Servers.KGS)) {
-      gameDownloader = new KGSDownloader(tournament);
+      gameDownloader = new KGSDownloader(tournament, tournamentUI.getJTextAreaLog());
     }
     updateTournament(gameDownloader);
   }

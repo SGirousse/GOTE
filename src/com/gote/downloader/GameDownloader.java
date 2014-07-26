@@ -15,6 +15,12 @@
  */
 package com.gote.downloader;
 
+import java.util.logging.Level;
+
+import javax.swing.JTextArea;
+
+import org.joda.time.DateTime;
+
 import com.gote.pojo.Game;
 import com.gote.pojo.Tournament;
 
@@ -28,13 +34,17 @@ public abstract class GameDownloader {
   /** Tournament reference with all the need informations for download */
   protected Tournament tournament;
 
+  /** JTextArea to show logs */
+  private JTextArea jTextArea;
+
   /**
    * Constructor
    * 
    * @param pTournament Tournament reference with all the need informations for download
    */
-  public GameDownloader(Tournament pTournament) {
+  public GameDownloader(Tournament pTournament, JTextArea pJTextArea) {
     tournament = pTournament;
+    jTextArea = pJTextArea;
   }
 
   /**
@@ -51,4 +61,14 @@ public abstract class GameDownloader {
    * @return boolean
    */
   public abstract boolean checkGameAccessAvailability();
+
+  /**
+   * Write log in jTextArea
+   * 
+   * @param pLogLevel Level
+   * @param pLogText The text to write
+   */
+  protected void log(Level pLogLevel, String pLogText) {
+    jTextArea.append("\n" + new DateTime() + " GameDownloader \n" + pLogLevel.getName() + " : " + pLogText);
+  }
 }

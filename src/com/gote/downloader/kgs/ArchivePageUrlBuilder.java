@@ -15,6 +15,7 @@
  */
 package com.gote.downloader.kgs;
 
+
 public class ArchivePageUrlBuilder extends KGSUtils {
 
   private String user;
