@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 import org.dom4j.Element;
 
-import com.gote.util.TournamentXMLUtil;
+import com.gote.util.xml.TournamentGOTEUtil;
 
 /**
  * 
@@ -46,15 +46,15 @@ public class Player {
    * Transform player to XML
    * 
    * @param pRoot "Players" element
-   * @see TournamentXMLUtil
+   * @see TournamentGOTEUtil
    */
   public void toXML(Element pRoot) {
     // Create player element
-    Element player = pRoot.addElement(TournamentXMLUtil.TAG_PLAYER);
+    Element player = pRoot.addElement(TournamentGOTEUtil.TAG_PLAYER);
     // Add its attributes
-    player.addAttribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO, getPseudo());
-    player.addAttribute(TournamentXMLUtil.ATT_PLAYER_RANK, getRank());
-    player.addAttribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME, getFirstname());
+    player.addAttribute(TournamentGOTEUtil.ATT_PLAYER_PSEUDO, getPseudo());
+    player.addAttribute(TournamentGOTEUtil.ATT_PLAYER_RANK, getRank());
+    player.addAttribute(TournamentGOTEUtil.ATT_PLAYER_FIRSTNAME, getFirstname());
   }
 
   /**
@@ -64,22 +64,22 @@ public class Player {
    */
   public void fromXML(Element pRoot) {
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO) != null) {
-      setPseudo(pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_PSEUDO).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_PLAYER_PSEUDO) != null) {
+      setPseudo(pRoot.attribute(TournamentGOTEUtil.ATT_PLAYER_PSEUDO).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_PLAYER_PSEUDO + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_PLAYER_PSEUDO + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_RANK) != null) {
-      setRank(pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_RANK).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_PLAYER_RANK) != null) {
+      setRank(pRoot.attribute(TournamentGOTEUtil.ATT_PLAYER_RANK).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_PLAYER_RANK + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_PLAYER_RANK + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME) != null) {
-      setFirstname(pRoot.attribute(TournamentXMLUtil.ATT_PLAYER_FIRSTNAME).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_PLAYER_FIRSTNAME) != null) {
+      setFirstname(pRoot.attribute(TournamentGOTEUtil.ATT_PLAYER_FIRSTNAME).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_PLAYER_FIRSTNAME + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_PLAYER_FIRSTNAME + " is null");
     }
   }
 
@@ -99,6 +99,18 @@ public class Player {
    */
   public void setPseudo(String pPseudo) {
     this.pseudo = pPseudo;
+  }
+
+  @Override
+  public boolean equals(Object pObject) {
+    if (pObject == this) {
+      return true;
+    }
+    if (pObject != null && pObject instanceof Player) {
+      Player player = (Player) pObject;
+      return player.getPseudo().equals(this.getPseudo()) && player.getFirstname().equals(this.getFirstname());
+    }
+    return false;
   }
 
   public String getFirstname() {

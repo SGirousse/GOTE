@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gote.util;
+package com.gote.util.xml;
 
-public final class TournamentXMLUtil {
+/**
+ * 
+ * Utility class with all the tags for GOTE xml
+ * 
+ * @author sgirouss
+ */
+public final class TournamentGOTEUtil {
   public static final String TAG_TOURNAMENT = "tournament";
 
   public static final String ATT_TOURNAMENT_NAME = "name";
 
   public static final String ATT_TOURNAMENT_SERVER = "server";
+
+  public static final String ATT_TOURNAMENT_DATESTART = "startDate";
+
+  public static final String ATT_TOURNAMENT_DATEEND = "endDate";
 
   public static final String TAG_ROUNDS = "rounds";
 

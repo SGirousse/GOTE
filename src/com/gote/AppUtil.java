@@ -15,6 +15,8 @@
  */
 package com.gote;
 
+import org.joda.time.DateTime;
+
 /**
  * 
  * Singleton with informations about application
@@ -30,7 +32,7 @@ public class AppUtil {
   public static final String APP_SHORTNAME = "GOTE";
 
   /** Version */
-  public static final String APP_VERSION = "0.4.2";
+  public static final String APP_VERSION = "0.5";
 
   /** Authors */
   public static final String APP_AUTHOR = "Simeon GIROUSSE - simeon[dot]girousse[at]gmail[dot]com";
@@ -38,14 +40,14 @@ public class AppUtil {
   /** Logo */
   public static final String APP_ICON_PATH = "resources/images/GOTE-icone.jpg";
 
+  /** Init and reset date */
+  public static final DateTime APP_INIT_DATE = new DateTime(1999, 1, 1, 0, 0);
+
   /** Path tournaments */
   public static final String PATH_TO_TOURNAMENTS = "tournaments/";
 
   /** Path save */
   public static final String PATH_TO_SAVE = "saving/";
-
-  /** Path logs */
-  public static final String PATH_TO_LOGS = "logs/";
 
   /** Path exports */
   public static final String PATH_TO_EXPORTS = "exports/";

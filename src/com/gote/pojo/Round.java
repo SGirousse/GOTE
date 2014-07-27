@@ -23,7 +23,9 @@ import java.util.logging.Logger;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 
-import com.gote.util.TournamentXMLUtil;
+import com.gote.AppUtil;
+import com.gote.util.xml.TournamentGOTEUtil;
+import com.gote.util.xml.TournamentOpenGothaUtil;
 
 /**
  * 
@@ -54,8 +56,8 @@ public class Round {
    */
   public Round() {
     setNumber(0);
-    setDateStart(new DateTime(1999, 1, 1, 0, 0));
-    setDateEnd(new DateTime(1999, 1, 1, 0, 0));
+    setDateStart(AppUtil.APP_INIT_DATE);
+    setDateEnd(AppUtil.APP_INIT_DATE);
     setGameList(new ArrayList<Game>());
   }
 
@@ -78,18 +80,18 @@ public class Round {
    * Transform Round to XML format
    * 
    * @param pRoot "Rounds" element
-   * @see TournamentXMLUtil
+   * @see TournamentGOTEUtil
    */
   public void toXML(Element pRoot) {
     // Create round element
-    Element round = pRoot.addElement(TournamentXMLUtil.TAG_ROUND);
+    Element round = pRoot.addElement(TournamentGOTEUtil.TAG_ROUND);
     // Add its attributes
-    round.addAttribute(TournamentXMLUtil.ATT_ROUND_NUMBER, new Integer(getNumber()).toString());
-    round.addAttribute(TournamentXMLUtil.ATT_ROUND_DATESTART, getDateStart().toString());
-    round.addAttribute(TournamentXMLUtil.ATT_ROUND_DATEEND, getDateEnd().toString());
+    round.addAttribute(TournamentGOTEUtil.ATT_ROUND_NUMBER, new Integer(getNumber()).toString());
+    round.addAttribute(TournamentGOTEUtil.ATT_ROUND_DATESTART, getDateStart().toString());
+    round.addAttribute(TournamentGOTEUtil.ATT_ROUND_DATEEND, getDateEnd().toString());
 
     // Add Games list
-    Element games = round.addElement(TournamentXMLUtil.TAG_GAMES);
+    Element games = round.addElement(TournamentGOTEUtil.TAG_GAMES);
     for (Game game : getGameList()) {
       game.toXML(games);
     }
@@ -102,29 +104,29 @@ public class Round {
    * @param pTournament Tournament
    */
   public void fromXML(Element pRoot, Tournament pTournament) {
-    if (pRoot.attribute(TournamentXMLUtil.ATT_ROUND_NUMBER) != null) {
-      setNumber(Integer.parseInt(pRoot.attribute(TournamentXMLUtil.ATT_ROUND_NUMBER).getValue()));
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_ROUND_NUMBER) != null) {
+      setNumber(Integer.parseInt(pRoot.attribute(TournamentGOTEUtil.ATT_ROUND_NUMBER).getValue()));
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_ROUND_NUMBER + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_ROUND_NUMBER + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATESTART) != null) {
-      setDateStart(new DateTime(pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATESTART).getValue()));
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_ROUND_DATESTART) != null) {
+      setDateStart(new DateTime(pRoot.attribute(TournamentGOTEUtil.ATT_ROUND_DATESTART).getValue()));
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_ROUND_DATESTART + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_ROUND_DATESTART + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATEEND) != null) {
-      setDateEnd(new DateTime(pRoot.attribute(TournamentXMLUtil.ATT_ROUND_DATEEND).getValue()));
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_ROUND_DATEEND) != null) {
+      setDateEnd(new DateTime(pRoot.attribute(TournamentGOTEUtil.ATT_ROUND_DATEEND).getValue()));
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_ROUND_DATEEND + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_ROUND_DATEEND + " is null");
     }
 
-    Element elementGames = pRoot.element(TournamentXMLUtil.TAG_GAMES);
+    Element elementGames = pRoot.element(TournamentGOTEUtil.TAG_GAMES);
     if (elementGames != null) {
       List<Game> games = new ArrayList<Game>();
       @SuppressWarnings("unchecked")
-      List<Element> gamesElements = elementGames.elements(TournamentXMLUtil.TAG_GAME);
+      List<Element> gamesElements = elementGames.elements(TournamentGOTEUtil.TAG_GAME);
       if (gamesElements != null && !gamesElements.isEmpty()) {
         for (Element gameElement : gamesElements) {
           Game game = new Game();
@@ -136,8 +138,25 @@ public class Round {
       }
       setGameList(games);
     } else {
-      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_GAMES + " is null");
+      LOGGER.log(Level.SEVERE, "The element " + TournamentGOTEUtil.TAG_GAMES + " is null");
     }
+  }
+
+  /**
+   * Returns a game result of that round between 2 players. If no result is found,
+   * TournamentOpenGothaUtil.VALUE_GAME_RESULT_UNKNOWN is returned
+   * 
+   * @param pBlackPlayer Player
+   * @param pWhitePlayer Player
+   * @return String
+   */
+  public String getGameResult(Player pBlackPlayer, Player pWhitePlayer) {
+    for (Game game : getGameList()) {
+      if (game.getBlack().equals(pBlackPlayer) && game.getWhite().equals(pWhitePlayer)) {
+        return game.getResult();
+      }
+    }
+    return TournamentOpenGothaUtil.VALUE_GAME_RESULT_UNKNOWN;
   }
 
   /**
@@ -220,6 +239,7 @@ public class Round {
   public List<Game> getToBePlayedGameList() {
     List<Game> toBePlayedGames = new ArrayList<Game>();
     for (Game game : getGameList()) {
+      // TODO should not add game with result like RESULT_WHITEWINS
       if (game.getResult() != null) {
         toBePlayedGames.add(game);
       }

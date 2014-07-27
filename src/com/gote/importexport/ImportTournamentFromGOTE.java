@@ -26,6 +26,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.gote.pojo.Tournament;
+import com.gote.util.ImportExportUtil;
 
 public class ImportTournamentFromGOTE extends ImportTournament {
 
@@ -37,7 +38,7 @@ public class ImportTournamentFromGOTE extends ImportTournament {
     LOGGER.log(Level.INFO, "Loading tournament from file " + pFile);
 
     Tournament tournament = new Tournament();
-    String content = getFileContent(pFile);
+    String content = ImportExportUtil.getFileContent(pFile);
     if (content == null) {
       LOGGER.log(Level.SEVERE, "File \"" + pFile.getPath() + "\" content is null");
       return null;

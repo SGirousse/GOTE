@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.gote.AppUtil;
+import com.gote.action.tournament.ExportTournamentButton;
 import com.gote.action.tournament.UpdateResultsButton;
 import com.gote.pojo.Tournament;
 import com.gote.ui.home.HomeUI;
@@ -102,7 +103,7 @@ public class TournamentUI extends JFrame implements WindowListener {
     jScrollPane.setMinimumSize(new Dimension(620, 300));
 
     JButton jButtonUpdate = new JButton(new UpdateResultsButton(this, tournament, TournamentUtil.BUTTON_UPDATE_LABEL));
-    JButton jButtonExport = new JButton(TournamentUtil.BUTTON_EXPORT_LABEL);
+    JButton jButtonExport = new JButton(new ExportTournamentButton(tournament, TournamentUtil.BUTTON_EXPORT_LABEL));
     JButton jButtonAddToClip = new JButton("<html><center>Copier dans le presse-papier</center></html>");
 
     JPanel jPanelLogs = new JPanel();

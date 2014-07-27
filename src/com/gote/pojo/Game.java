@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 import org.dom4j.Element;
 
-import com.gote.util.TournamentXMLUtil;
+import com.gote.util.xml.TournamentGOTEUtil;
 
 /**
  * 
@@ -61,18 +61,18 @@ public class Game {
    * Transform Game to XML
    * 
    * @param pRoot "Games" element
-   * @see TournamentXMLUtil
+   * @see TournamentGOTEUtil
    */
   public void toXML(Element pRoot) {
     // Create game element
-    Element game = pRoot.addElement(TournamentXMLUtil.TAG_GAME);
+    Element game = pRoot.addElement(TournamentGOTEUtil.TAG_GAME);
     // Add its attributes
-    game.addAttribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER, getWhite().getPseudo());
-    game.addAttribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER, getBlack().getPseudo());
-    game.addAttribute(TournamentXMLUtil.ATT_GAME_URL, getGameUrl());
-    game.addAttribute(TournamentXMLUtil.ATT_GAME_KOMI, getKomi());
-    game.addAttribute(TournamentXMLUtil.ATT_GAME_HANDICAP, getHandicap());
-    game.addAttribute(TournamentXMLUtil.ATT_GAME_RESULT, getResult());
+    game.addAttribute(TournamentGOTEUtil.ATT_GAME_WHITEPLAYER, getWhite().getPseudo());
+    game.addAttribute(TournamentGOTEUtil.ATT_GAME_BLACKPLAYER, getBlack().getPseudo());
+    game.addAttribute(TournamentGOTEUtil.ATT_GAME_URL, getGameUrl());
+    game.addAttribute(TournamentGOTEUtil.ATT_GAME_KOMI, getKomi());
+    game.addAttribute(TournamentGOTEUtil.ATT_GAME_HANDICAP, getHandicap());
+    game.addAttribute(TournamentGOTEUtil.ATT_GAME_RESULT, getResult());
   }
 
   /**
@@ -83,40 +83,42 @@ public class Game {
    */
   public void fromXML(Element pRoot, Tournament pTournament) {
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER) != null) {
-      setBlack(pTournament.getParticipantByName(pRoot.attribute(TournamentXMLUtil.ATT_GAME_BLACKPLAYER).getValue()));
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_GAME_BLACKPLAYER) != null) {
+      setBlack(pTournament.getParticipantWithPseudo(pRoot.attribute(TournamentGOTEUtil.ATT_GAME_BLACKPLAYER)
+          .getValue()));
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_BLACKPLAYER + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_GAME_BLACKPLAYER + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER) != null) {
-      setWhite(pTournament.getParticipantByName(pRoot.attribute(TournamentXMLUtil.ATT_GAME_WHITEPLAYER).getValue()));
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_GAME_WHITEPLAYER) != null) {
+      setWhite(pTournament.getParticipantWithPseudo(pRoot.attribute(TournamentGOTEUtil.ATT_GAME_WHITEPLAYER)
+          .getValue()));
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_WHITEPLAYER + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_GAME_WHITEPLAYER + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_URL) != null) {
-      setGameUrl(pRoot.attribute(TournamentXMLUtil.ATT_GAME_URL).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_GAME_URL) != null) {
+      setGameUrl(pRoot.attribute(TournamentGOTEUtil.ATT_GAME_URL).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_URL + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_GAME_URL + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_HANDICAP) != null) {
-      setHandicap(pRoot.attribute(TournamentXMLUtil.ATT_GAME_HANDICAP).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_GAME_HANDICAP) != null) {
+      setHandicap(pRoot.attribute(TournamentGOTEUtil.ATT_GAME_HANDICAP).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_HANDICAP + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_GAME_HANDICAP + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_RESULT) != null) {
-      setResult(pRoot.attribute(TournamentXMLUtil.ATT_GAME_RESULT).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_GAME_RESULT) != null) {
+      setResult(pRoot.attribute(TournamentGOTEUtil.ATT_GAME_RESULT).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_RESULT + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_GAME_RESULT + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_GAME_KOMI) != null) {
-      setKomi(pRoot.attribute(TournamentXMLUtil.ATT_GAME_KOMI).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_GAME_KOMI) != null) {
+      setKomi(pRoot.attribute(TournamentGOTEUtil.ATT_GAME_KOMI).getValue());
     } else {
-      LOGGER.log(Level.WARNING, "The attribute " + TournamentXMLUtil.ATT_GAME_KOMI + " is null");
+      LOGGER.log(Level.WARNING, "The attribute " + TournamentGOTEUtil.ATT_GAME_KOMI + " is null");
     }
   }
 

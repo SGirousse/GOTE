@@ -26,12 +26,15 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.joda.time.DateTime;
 
 import com.gote.pojo.Game;
 import com.gote.pojo.Player;
 import com.gote.pojo.Round;
 import com.gote.pojo.Tournament;
 import com.gote.pojo.TournamentRules;
+import com.gote.util.ImportExportUtil;
+import com.gote.util.xml.TournamentOpenGothaUtil;
 
 /**
  * 
@@ -59,69 +62,13 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
   /** Class logger */
   private static Logger LOGGER = Logger.getLogger(ImportTournamentFromOpenGotha.class.getName());
 
-  public static final String TAG_TOURNAMENT = "Tournament";
-
-  public static final String TAG_PLAYERS = "Players";
-
-  public static final String TAG_PLAYER = "Player";
-
-  public static final String ATTRIBUTE_PLAYER_NAME = "name";
-
-  public static final String ATTRIBUTE_PLAYER_FIRSTNAME = "firstName";
-
-  public static final String ATTRIBUTE_PLAYER_RANK = "rank";
-
-  public static final String TAG_GAMES = "Games";
-
-  public static final String TAG_GAME = "Game";
-
-  public static final String ATTRIBUTE_GAME_ROUND = "roundNumber";
-
-  public static final String ATTRIBUTE_GAME_WHITE_PLAYER = "whitePlayer";
-
-  public static final String ATTRIBUTE_GAME_BLACK_PLAYER = "blackPlayer";
-
-  public static final String ATTRIBUTE_GAME_HANDICAP = "handicap";
-
-  public static final String ATTRIBUTE_GAME_RESULT = "result";
-
-  public static final String TAG_BYE_PLAYERS = "ByePlayers";
-
-  public static final String TAG_BYE_PLAYER = "ByePlayer";
-
-  public static final String TAG_TOURNAMENT_PARAMETER_SET = "TournamentParameterSet";
-
-  public static final String TAG_GENERAL_PARAMETER_SET = "GeneralParameterSet";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_NAME = "name";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI = "komi";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_SIZE = "size";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_TIME_SYSTEM = "complementaryTimeSystem";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_BASIC_TIME = "basicTime";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_TIME = "canByoYomiTime";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_COUNT = "stdByoYomiTime";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_BEGIN_DATE = "beginDate";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_END_DATE = "endDate";
-
-  public static final String ATTRIBUTE_GENERAL_PARAMETER_SET_ROUND_NUMBER = "numberOfRounds";
-
-  public static final String TAG_HANDICAP_PARAMETER_SET = "HandicapParameterSet";
-
   @Override
   public Tournament createTournamentFromConfig(File pFile) {
 
     LOGGER.log(Level.INFO, "A new tournament is going to be created from the file : " + pFile.getPath());
 
     Tournament tournament = new Tournament();
-    String content = getFileContent(pFile);
+    String content = ImportExportUtil.getFileContent(pFile);
 
     if (content == null) {
       LOGGER.log(Level.SEVERE, "File \"" + pFile.getPath() + "\" content is null");
@@ -155,7 +102,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     Element elPlayers = null;
     Element elGames = null;
 
-    elTournamentRulesSet = pElementTournament.element(TAG_TOURNAMENT_PARAMETER_SET);
+    elTournamentRulesSet = pElementTournament.element(TournamentOpenGothaUtil.TAG_TOURNAMENT_PARAMETER_SET);
     init = elTournamentRulesSet != null;
     if (init) {
       init = initTournamentRules(pTournament, elTournamentRulesSet);
@@ -165,7 +112,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     }
 
     if (init) {
-      elPlayers = pElementTournament.element(TAG_PLAYERS);
+      elPlayers = pElementTournament.element(TournamentOpenGothaUtil.TAG_PLAYERS);
       init = elPlayers != null;
     } else {
       LOGGER.log(Level.SEVERE, "During tournament rules initialization a problem occured.");
@@ -179,7 +126,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     }
 
     if (init) {
-      elGames = pElementTournament.element(TAG_GAMES);
+      elGames = pElementTournament.element(TournamentOpenGothaUtil.TAG_GAMES);
       init = elGames != null;
     } else {
       LOGGER.log(Level.SEVERE, "During players initialization a problem occured.");
@@ -206,20 +153,28 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
   public boolean initTournamentRules(Tournament pTournament, Element pElementTournamentRulesSet) {
     LOGGER.log(Level.INFO, "Tournament rules initialization");
     boolean init = true;
-    Element elementGeneralParameters = pElementTournamentRulesSet.element(TAG_GENERAL_PARAMETER_SET);
-    String komi = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI).getValue();
-    String size = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_SIZE).getValue();
-    String timeSystem = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_TIME_SYSTEM).getValue();
-    String basicTime = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_BASIC_TIME).getValue();
-    String byoYomiDuration = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_TIME)
+    Element elementGeneralParameters = pElementTournamentRulesSet
+        .element(TournamentOpenGothaUtil.TAG_GENERAL_PARAMETER_SET);
+    String komi = elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI)
         .getValue();
-    String numberOfByoYomi = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_COUNT)
+    String size = elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_SIZE)
         .getValue();
-    String name = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_NAME).getValue();
-    String startDate = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_BEGIN_DATE).getValue();
-    String endDate = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_END_DATE).getValue();
-    String numberOfRounds = elementGeneralParameters.attribute(ATTRIBUTE_GENERAL_PARAMETER_SET_ROUND_NUMBER)
+    String timeSystem = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_TIME_SYSTEM).getValue();
+    String basicTime = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BASIC_TIME).getValue();
+    String byoYomiDuration = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_TIME).getValue();
+    String numberOfByoYomi = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_COUNT).getValue();
+    String name = elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_NAME)
         .getValue();
+    String startDate = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BEGIN_DATE).getValue();
+    String endDate = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_END_DATE).getValue();
+    String numberOfRounds = elementGeneralParameters.attribute(
+        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_ROUND_NUMBER).getValue();
 
     pTournament.setTitle(name);
 
@@ -233,6 +188,8 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     tournamentRules.setTag("");
 
     pTournament.setTournamentRules(tournamentRules);
+    pTournament.setStartDate(new DateTime(startDate));
+    pTournament.setEndDate(new DateTime(endDate));
 
     return init;
   }
@@ -248,16 +205,16 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     LOGGER.log(Level.INFO, "Players initialization");
     boolean init = false;
     @SuppressWarnings("unchecked")
-    List<Element> listOfPlayers = (List<Element>) pElementPlayers.elements(TAG_PLAYER);
+    List<Element> listOfPlayers = (List<Element>) pElementPlayers.elements(TournamentOpenGothaUtil.TAG_PLAYER);
     init = (listOfPlayers != null && !listOfPlayers.isEmpty());
     if (init) {
       List<Player> tournamentPlayers = new ArrayList<Player>();
 
       for (Element playerElement : listOfPlayers) {
         Player player = new Player();
-        player.setPseudo(playerElement.attribute(ATTRIBUTE_PLAYER_NAME).getValue());
-        player.setFirstname(playerElement.attribute(ATTRIBUTE_PLAYER_FIRSTNAME).getValue());
-        player.setRank(playerElement.attribute(ATTRIBUTE_PLAYER_RANK).getValue());
+        player.setPseudo(playerElement.attribute(TournamentOpenGothaUtil.ATTRIBUTE_PLAYER_NAME).getValue());
+        player.setFirstname(playerElement.attribute(TournamentOpenGothaUtil.ATTRIBUTE_PLAYER_FIRSTNAME).getValue());
+        player.setRank(playerElement.attribute(TournamentOpenGothaUtil.ATTRIBUTE_PLAYER_RANK).getValue());
         tournamentPlayers.add(player);
       }
 
@@ -278,7 +235,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
     LOGGER.log(Level.INFO, "Rounds initialization");
     boolean init = false;
     @SuppressWarnings("unchecked")
-    List<Element> listOfGames = (List<Element>) pElementGames.elements(TAG_GAME);
+    List<Element> listOfGames = (List<Element>) pElementGames.elements(TournamentOpenGothaUtil.TAG_GAME);
     init = (listOfGames != null && !listOfGames.isEmpty());
     if (init) {
 
@@ -288,7 +245,7 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
 
         // Check round game number, if it exists, add it to the round if it does not exists create
         // the round first
-        String roundNumberAsText = gameElement.attribute(ATTRIBUTE_GAME_ROUND).getValue();
+        String roundNumberAsText = gameElement.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GAME_ROUND).getValue();
 
         int roundPlacement = -1;
         List<Game> games = new ArrayList<Game>();
@@ -297,35 +254,35 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
         if (roundNumberAsText != null && !roundNumberAsText.isEmpty()) {
           roundPlacement = getRoundPlacement(tournamentRounds, new Integer(roundNumberAsText));
         } else {
-          LOGGER.log(Level.WARNING, "No round numbre in configuration file. Line is : " + gameElement.toString());
+          LOGGER.log(Level.WARNING, "No round number in configuration file. Line is : " + gameElement.toString());
         }
 
         if (roundPlacement > -1) {
           games = tournamentRounds.get(roundPlacement).getGameList();
         } else {
-
           LOGGER.log(Level.INFO, "Round " + roundNumberAsText + " is new and will be created.");
           round.setNumber(new Integer(roundNumberAsText));
         }
 
         Game game = new Game();
 
-        Player black = pTournament.getParticipantByNameOpenGotha(gameElement.attribute(ATTRIBUTE_GAME_BLACK_PLAYER)
-            .getValue());
-        Player white = pTournament.getParticipantByNameOpenGotha(gameElement.attribute(ATTRIBUTE_GAME_WHITE_PLAYER)
-            .getValue());
-        String result = gameElement.attribute(ATTRIBUTE_GAME_RESULT).getValue();
-        String handicap = gameElement.attribute(ATTRIBUTE_GAME_HANDICAP).getValue();
+        Player black = pTournament.getParticipantWithCompleteName(gameElement.attribute(
+            TournamentOpenGothaUtil.ATTRIBUTE_GAME_BLACK_PLAYER).getValue());
+        Player white = pTournament.getParticipantWithCompleteName(gameElement.attribute(
+            TournamentOpenGothaUtil.ATTRIBUTE_GAME_WHITE_PLAYER).getValue());
+        String result = gameElement.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GAME_RESULT).getValue();
+        String handicap = gameElement.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GAME_HANDICAP).getValue();
 
         game.setBlack(black);
         game.setWhite(white);
         game.setResult(result);
         game.setHandicap(handicap);
-
         games.add(game);
 
         if (roundPlacement < 0) {
           round.setGameList(games);
+          round.setDateStart(pTournament.getStartDate());
+          round.setDateEnd(pTournament.getEndDate());
           tournamentRounds.add(round);
         }
 

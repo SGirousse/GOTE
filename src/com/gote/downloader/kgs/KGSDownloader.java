@@ -29,6 +29,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.gote.AppUtil;
 import com.gote.downloader.GameDownloader;
 import com.gote.pojo.Game;
 import com.gote.pojo.Round;
@@ -208,11 +209,11 @@ public class KGSDownloader extends GameDownloader {
 
   private DateTime getStartDate(Round pRound) {
     DateTime startDate = pRound.getDateStart();
-    if (startDate == null || startDate == new DateTime(1999, 1, 1, 0, 0)) {
+    if (startDate == null || startDate == AppUtil.APP_INIT_DATE) {
       // startDate = tournament.getStartDate();
       if (startDate == null) {
         log(Level.WARNING, "No start date, archives will be fetched since 01/01/2000. This will be long.");
-        startDate = new DateTime(2000, 1, 1, 0, 0);
+        startDate = AppUtil.APP_INIT_DATE;
       }
     }
     return startDate;
@@ -220,7 +221,7 @@ public class KGSDownloader extends GameDownloader {
 
   private DateTime getEndDate(Round pRound) {
     DateTime endDate = pRound.getDateEnd();
-    if (endDate == null || endDate == new DateTime(1999, 1, 1, 0, 0)) {
+    if (endDate == null || endDate == AppUtil.APP_INIT_DATE) {
       // startDate = tournament.getEndDate();
       if (endDate == null) {
         endDate = new DateTime();

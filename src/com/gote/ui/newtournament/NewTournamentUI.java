@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -60,7 +59,7 @@ public class NewTournamentUI extends JFrame implements WindowListener {
   private static final long serialVersionUID = -8132964378537435646L;
 
   /** Class logger */
-  private static Logger LOGGER = Logger.getLogger(NewTournamentUI.class.getName());
+  // private static Logger LOGGER = Logger.getLogger(NewTournamentUI.class.getName());
 
   /** Home UI reference */
   private HomeUI homeUI;
@@ -237,6 +236,15 @@ public class NewTournamentUI extends JFrame implements WindowListener {
    */
   public void setLoadFileText(String pText) {
     jEditorPaneFilePath.setText(pText);
+  }
+
+  /**
+   * Get file path in path editor pane
+   * 
+   * @return path
+   */
+  public String getLoadFileText() {
+    return jEditorPaneFilePath.getText();
   }
 
   /**

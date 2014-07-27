@@ -30,10 +30,12 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.joda.time.DateTime;
 
 import com.gote.AppUtil;
 import com.gote.util.Servers;
-import com.gote.util.TournamentXMLUtil;
+import com.gote.util.xml.TournamentGOTEUtil;
+import com.gote.util.xml.TournamentOpenGothaUtil;
 
 /**
  * 
@@ -60,6 +62,12 @@ public class Tournament {
   /** Rules and settings of the tournament */
   private TournamentRules tournamentRules;
 
+  /** Start date of the tournament */
+  private DateTime startDate;
+
+  /** End date of the tournament */
+  private DateTime endDate;
+
   /**
    * Default constructor and initializations
    */
@@ -69,6 +77,8 @@ public class Tournament {
     setParticipantsList(new ArrayList<Player>());
     setServerType(Servers.NO_SERVER);
     setTournamentRules(new TournamentRules());
+    setStartDate(AppUtil.APP_INIT_DATE);
+    setEndDate(AppUtil.APP_INIT_DATE);
   }
 
   /**
@@ -102,21 +112,23 @@ public class Tournament {
     Document doc = DocumentHelper.createDocument();
 
     // Create tournament element
-    Element root = doc.addElement(TournamentXMLUtil.TAG_TOURNAMENT);
+    Element root = doc.addElement(TournamentGOTEUtil.TAG_TOURNAMENT);
     // Add attributes
-    root.addAttribute(TournamentXMLUtil.ATT_TOURNAMENT_NAME, getTitle());
-    root.addAttribute(TournamentXMLUtil.ATT_TOURNAMENT_SERVER, getServerType());
+    root.addAttribute(TournamentGOTEUtil.ATT_TOURNAMENT_NAME, getTitle());
+    root.addAttribute(TournamentGOTEUtil.ATT_TOURNAMENT_SERVER, getServerType());
+    root.addAttribute(TournamentGOTEUtil.ATT_TOURNAMENT_DATESTART, getStartDate().toString());
+    root.addAttribute(TournamentGOTEUtil.ATT_TOURNAMENT_DATEEND, getEndDate().toString());
 
     // Add rules
     getTournamentRules().toXML(root);
 
     // Add players
-    Element players = root.addElement(TournamentXMLUtil.TAG_PLAYERS);
+    Element players = root.addElement(TournamentGOTEUtil.TAG_PLAYERS);
     for (Player player : getParticipantsList()) {
       player.toXML(players);
     }
     // Add rounds
-    Element rounds = root.addElement(TournamentXMLUtil.TAG_ROUNDS);
+    Element rounds = root.addElement(TournamentGOTEUtil.TAG_ROUNDS);
     for (Round round : getRounds()) {
       round.toXML(rounds);
     }
@@ -146,32 +158,44 @@ public class Tournament {
    * @param pRoot Tournament element
    */
   public void fromXML(Element pRoot) {
-    if (pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_NAME) != null) {
-      setTitle(pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_NAME).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_NAME) != null) {
+      setTitle(pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_NAME).getValue());
     } else {
-      LOGGER.log(Level.SEVERE, "The attribute " + TournamentXMLUtil.ATT_TOURNAMENT_NAME + " is null");
+      LOGGER.log(Level.SEVERE, "The attribute " + TournamentGOTEUtil.ATT_TOURNAMENT_NAME + " is null");
     }
 
-    if (pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_SERVER) != null) {
-      setServerType(pRoot.attribute(TournamentXMLUtil.ATT_TOURNAMENT_SERVER).getValue());
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_SERVER) != null) {
+      setServerType(pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_SERVER).getValue());
     } else {
-      LOGGER.log(Level.SEVERE, "The attribute " + TournamentXMLUtil.ATT_TOURNAMENT_NAME + " is null");
+      LOGGER.log(Level.SEVERE, "The attribute " + TournamentGOTEUtil.ATT_TOURNAMENT_NAME + " is null");
     }
 
-    Element elementTournamentRules = pRoot.element(TournamentXMLUtil.TAG_RULES);
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_DATESTART) != null) {
+      setStartDate(new DateTime(pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_DATESTART).getValue()));
+    } else {
+      LOGGER.log(Level.SEVERE, "The attribute " + TournamentGOTEUtil.ATT_TOURNAMENT_DATESTART + " is null");
+    }
+
+    if (pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_DATEEND) != null) {
+      setEndDate(new DateTime(pRoot.attribute(TournamentGOTEUtil.ATT_TOURNAMENT_DATEEND).getValue()));
+    } else {
+      LOGGER.log(Level.SEVERE, "The attribute " + TournamentGOTEUtil.ATT_TOURNAMENT_DATEEND + " is null");
+    }
+
+    Element elementTournamentRules = pRoot.element(TournamentGOTEUtil.TAG_RULES);
     if (elementTournamentRules != null) {
       TournamentRules tournamentRules = new TournamentRules();
       tournamentRules.fromXML(elementTournamentRules);
       setTournamentRules(tournamentRules);
     } else {
-      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_RULES + " is null");
+      LOGGER.log(Level.SEVERE, "The element " + TournamentGOTEUtil.TAG_RULES + " is null");
     }
 
-    Element elementPlayers = pRoot.element(TournamentXMLUtil.TAG_PLAYERS);
+    Element elementPlayers = pRoot.element(TournamentGOTEUtil.TAG_PLAYERS);
     if (elementPlayers != null) {
       List<Player> players = new ArrayList<Player>();
       @SuppressWarnings("unchecked")
-      List<Element> playersElements = elementPlayers.elements(TournamentXMLUtil.TAG_PLAYER);
+      List<Element> playersElements = elementPlayers.elements(TournamentGOTEUtil.TAG_PLAYER);
       if (playersElements != null && !playersElements.isEmpty()) {
         for (Element playerElement : playersElements) {
           Player player = new Player();
@@ -183,14 +207,14 @@ public class Tournament {
       }
       setParticipantsList(players);
     } else {
-      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_ROUNDS + " is null");
+      LOGGER.log(Level.SEVERE, "The element " + TournamentGOTEUtil.TAG_ROUNDS + " is null");
     }
 
-    Element elementRounds = pRoot.element(TournamentXMLUtil.TAG_ROUNDS);
+    Element elementRounds = pRoot.element(TournamentGOTEUtil.TAG_ROUNDS);
     if (elementRounds != null) {
       List<Round> rounds = new ArrayList<Round>();
       @SuppressWarnings("unchecked")
-      List<Element> roundsElements = elementRounds.elements(TournamentXMLUtil.TAG_ROUND);
+      List<Element> roundsElements = elementRounds.elements(TournamentGOTEUtil.TAG_ROUND);
       if (roundsElements != null && !roundsElements.isEmpty()) {
         for (Element roundElement : roundsElements) {
           Round round = new Round();
@@ -202,7 +226,7 @@ public class Tournament {
       }
       setRounds(rounds);
     } else {
-      LOGGER.log(Level.SEVERE, "The element " + TournamentXMLUtil.TAG_ROUNDS + " is null");
+      LOGGER.log(Level.SEVERE, "The element " + TournamentGOTEUtil.TAG_ROUNDS + " is null");
     }
   }
 
@@ -213,7 +237,7 @@ public class Tournament {
    * @param pName Pseudo of player
    * @return Player
    */
-  public Player getParticipantByNameOpenGotha(String pName) {
+  public Player getParticipantWithCompleteName(String pName) {
     for (Player player : getParticipantsList()) {
       if (pName.equalsIgnoreCase(player.getPseudo() + player.getFirstname())) {
         return player;
@@ -229,13 +253,51 @@ public class Tournament {
    * @param pName Pseudo of player
    * @return Player
    */
-  public Player getParticipantByName(String pName) {
+  public Player getParticipantWithPseudo(String pName) {
     for (Player player : getParticipantsList()) {
       if (pName.equalsIgnoreCase(player.getPseudo())) {
         return player;
       }
     }
     LOGGER.log(Level.WARNING, "No participant found with name " + pName);
+    return null;
+  }
+
+  /**
+   * Game result returned for a game played between 2 players at a given round
+   * 
+   * @param pRoundNumber int round number
+   * @param pBlackPlayer String black player complete name
+   * @param pWhitePlayer String white player complete name
+   * @return String game result
+   * @see TournamentOpenGothaUtil
+   */
+  public String getGameResultWithCompleteName(int pRoundNumber, String pBlackPlayer, String pWhitePlayer) {
+    Round round = getRoundWithNumber(pRoundNumber);
+    if (round != null) {
+      Player black = getParticipantWithCompleteName(pBlackPlayer);
+      if (black != null) {
+        Player white = getParticipantWithCompleteName(pWhitePlayer);
+        if (white != null) {
+          return round.getGameResult(black, white);
+        }
+      }
+    }
+    return TournamentOpenGothaUtil.VALUE_GAME_RESULT_UNKNOWN;
+  }
+
+  /**
+   * Return a Round of the Tournament with the number in parameter
+   * 
+   * @param pRoundNumber int
+   * @return Round or null of no Round matches
+   */
+  public Round getRoundWithNumber(int pRoundNumber) {
+    for (Round round : getRounds()) {
+      if (round.getNumber() == pRoundNumber) {
+        return round;
+      }
+    }
     return null;
   }
 
@@ -328,6 +390,34 @@ public class Tournament {
    */
   public void setTournamentRules(TournamentRules pTournamentRules) {
     this.tournamentRules = pTournamentRules;
+  }
+
+  /**
+   * @return returns startDate.
+   */
+  public DateTime getStartDate() {
+    return startDate;
+  }
+
+  /**
+   * @param startDate startDate to set.
+   */
+  public void setStartDate(DateTime startDate) {
+    this.startDate = startDate;
+  }
+
+  /**
+   * @return returns endDate.
+   */
+  public DateTime getEndDate() {
+    return endDate;
+  }
+
+  /**
+   * @param endDate endDate to set.
+   */
+  public void setEndDate(DateTime endDate) {
+    this.endDate = endDate;
   }
 
 }

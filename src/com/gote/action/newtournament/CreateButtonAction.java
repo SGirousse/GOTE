@@ -15,8 +15,14 @@
  */
 package com.gote.action.newtournament;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,6 +61,7 @@ public class CreateButtonAction extends AbstractAction {
     if (createTournamentFolders()) {
       ExportTournament exportTournament = new ExportTournamentForGOTE();
       exportTournament.export(newTournamentUI.getTournament());
+      copyOriginal();
       newTournamentUI.setBackToMainWindow(false);
       newTournamentUI.dispose();
       SwingUtilities.invokeLater(new Runnable() {
@@ -98,4 +105,19 @@ public class CreateButtonAction extends AbstractAction {
     return false;
   }
 
+  /**
+   * Copy origin data in tournament folder, then it can be used for updates and also possible
+   * checks
+   */
+  private void copyOriginal() {
+    // TODO check the origin of the file, here it is assumed the file come from open-gotha
+    Path source = Paths.get(newTournamentUI.getLoadFileText());
+    Path target = Paths.get(AppUtil.PATH_TO_TOURNAMENTS + newTournamentUI.getTournament().getTitle() + "/"
+        + AppUtil.PATH_TO_EXPORTS + "opengotha_" + newTournamentUI.getTournament().getTitle() + ".xml");
+    try {
+      Files.copy(source, target, REPLACE_EXISTING);
+    } catch (IOException e) {
+      LOGGER.log(Level.SEVERE, "Copy of opengotha from " + source + " to " + target + " failed", e);
+    }
+  }
 }
