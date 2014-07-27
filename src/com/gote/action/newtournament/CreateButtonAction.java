@@ -84,6 +84,7 @@ public class CreateButtonAction extends AbstractAction {
     String folderToCreate = AppUtil.PATH_TO_TOURNAMENTS + newTournamentUI.getTournament().getTitle();
     String folderSave = folderToCreate + "/" + AppUtil.PATH_TO_SAVE;
     String folderExport = folderToCreate + "/" + AppUtil.PATH_TO_EXPORTS;
+    String folderSGF = folderToCreate + "/" + AppUtil.PATH_TO_SGFS;
 
     // Create the folder and check if everything is ok
     if ((new File(folderToCreate)).mkdirs()) {
@@ -97,6 +98,11 @@ public class CreateButtonAction extends AbstractAction {
         LOGGER.log(Level.INFO, "The folder " + folderExport + " has been created");
       } else {
         LOGGER.log(Level.WARNING, "The folder " + folderExport + " has not been created");
+      }
+      if ((new File(folderSGF)).mkdirs()) {
+        LOGGER.log(Level.INFO, "The folder " + folderSGF + " has been created");
+      } else {
+        LOGGER.log(Level.WARNING, "The folder " + folderSGF + " has not been created");
       }
       return true;
     }

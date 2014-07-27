@@ -51,6 +51,7 @@ public class UpdateResultsButton extends AbstractAction {
       gameDownloader = new KGSDownloader(tournament, tournamentUI.getJTextAreaLog());
     }
     updateTournament(gameDownloader);
+    tournament.save();
   }
 
   /**

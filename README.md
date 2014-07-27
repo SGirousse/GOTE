@@ -1,4 +1,4 @@
-GOTE v0.5
+GOTE v0.5.1
 ====
 
 Summary

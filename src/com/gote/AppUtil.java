@@ -32,7 +32,7 @@ public class AppUtil {
   public static final String APP_SHORTNAME = "GOTE";
 
   /** Version */
-  public static final String APP_VERSION = "0.5";
+  public static final String APP_VERSION = "0.5.1";
 
   /** Authors */
   public static final String APP_AUTHOR = "Simeon GIROUSSE - simeon[dot]girousse[at]gmail[dot]com";
@@ -51,6 +51,9 @@ public class AppUtil {
 
   /** Path exports */
   public static final String PATH_TO_EXPORTS = "exports/";
+
+  /** Path SGF */
+  public static final String PATH_TO_SGFS = "sgfs/";
 
   /**
    * Private constructor

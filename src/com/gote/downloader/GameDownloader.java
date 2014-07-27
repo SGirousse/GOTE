@@ -71,4 +71,15 @@ public abstract class GameDownloader {
   protected void log(Level pLogLevel, String pLogText) {
     jTextArea.append("\n" + new DateTime() + " GameDownloader \n" + pLogLevel.getName() + " : " + pLogText);
   }
+
+  /**
+   * Write log in jTextArea
+   * 
+   * @param pLogLevel Level
+   * @param pLogText The text to write
+   * @param pException Exception
+   */
+  protected void log(Level pLogLevel, String pLogText, Exception pException) {
+    jTextArea.append("\n" + new DateTime() + " GameDownloader \n" + pLogLevel.getName() + " : " + pLogText);
+  }
 }
