@@ -1,0 +1,6 @@
+Gote v0.5.2
+*************
+28/07/2014
+[Fix issue #xxx] Better control of OpenGotha attributes existence (For sets)
+[Update        ] README updated
+[New           ] Logs and libs (send to Git)

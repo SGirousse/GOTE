@@ -153,43 +153,69 @@ public class ImportTournamentFromOpenGotha extends ImportTournament {
   public boolean initTournamentRules(Tournament pTournament, Element pElementTournamentRulesSet) {
     LOGGER.log(Level.INFO, "Tournament rules initialization");
     boolean init = true;
+    TournamentRules tournamentRules = new TournamentRules();
+
     Element elementGeneralParameters = pElementTournamentRulesSet
         .element(TournamentOpenGothaUtil.TAG_GENERAL_PARAMETER_SET);
-    String komi = elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI)
-        .getValue();
-    String size = elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_SIZE)
-        .getValue();
-    String timeSystem = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_TIME_SYSTEM).getValue();
-    String basicTime = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BASIC_TIME).getValue();
-    String byoYomiDuration = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_TIME).getValue();
-    String numberOfByoYomi = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_COUNT).getValue();
-    String name = elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_NAME)
-        .getValue();
-    String startDate = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BEGIN_DATE).getValue();
-    String endDate = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_END_DATE).getValue();
-    String numberOfRounds = elementGeneralParameters.attribute(
-        TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_ROUND_NUMBER).getValue();
+    if (elementGeneralParameters == null) {
+      return false;
+    }
 
-    pTournament.setTitle(name);
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI) != null) {
+      tournamentRules.setKomi(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_KOMI).getValue());
+    }
 
-    TournamentRules tournamentRules = new TournamentRules();
-    tournamentRules.setKomi(komi);
-    tournamentRules.setSize(size);
-    tournamentRules.setTimeSystem(timeSystem);
-    tournamentRules.setBasicTime(basicTime);
-    tournamentRules.setByoYomiDuration(byoYomiDuration);
-    tournamentRules.setNumberOfByoYomi(numberOfByoYomi);
-    tournamentRules.setTag("");
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_SIZE) != null) {
+      tournamentRules.setSize(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_SIZE).getValue());
+    }
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_TIME_SYSTEM) != null) {
+      tournamentRules.setTimeSystem(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_TIME_SYSTEM).getValue());
+    }
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BASIC_TIME) != null) {
+      tournamentRules.setBasicTime(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BASIC_TIME).getValue());
+    }
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_TIME) != null) {
+      tournamentRules.setByoYomiDuration(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_TIME).getValue());
+    }
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_COUNT) != null) {
+      tournamentRules.setNumberOfByoYomi(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BYOYOMI_COUNT).getValue());
+    }
 
     pTournament.setTournamentRules(tournamentRules);
-    pTournament.setStartDate(new DateTime(startDate));
-    pTournament.setEndDate(new DateTime(endDate));
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_NAME) != null) {
+      pTournament.setTitle(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_NAME).getValue());
+    } else {
+      LOGGER.log(Level.WARNING, "No title found for the tournament");
+    }
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BEGIN_DATE) != null) {
+      pTournament.setStartDate(new DateTime(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_BEGIN_DATE).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "No start date tournament");
+    }
+
+    if (elementGeneralParameters.attribute(TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_END_DATE) != null) {
+      pTournament.setEndDate(new DateTime(elementGeneralParameters.attribute(
+          TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_END_DATE).getValue()));
+    } else {
+      LOGGER.log(Level.WARNING, "No end date tournament");
+    }
+
+    // String numberOfRounds = elementGeneralParameters.attribute(
+    // TournamentOpenGothaUtil.ATTRIBUTE_GENERAL_PARAMETER_SET_ROUND_NUMBER).getValue();
 
     return init;
   }

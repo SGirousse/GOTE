@@ -1,4 +1,4 @@
-GOTE v0.5.1
+GOTE v0.5.2
 ====
 
 Summary
@@ -18,12 +18,13 @@ This software will, in its first version, allow :
 ***
 Development
 ---
-Everyone is welcome to help and use that work. It is developed with the idea that someday this could be used with another Go server (OGS, IGS, DGS, ...)
+Everyone is welcome to help and use that work. It is developed with the idea that someday this could be used with another Go server (OGS, IGS, DGS, ...) Whole code is available under https://github.com/SGirousse/GOTE.
+Some log are available under GOTE/resources/development/gote.log
 
 ***
 Version
 ---
-The current version is still an alpha under development.
+The current version is under development as a beta.
 
 ***
 Copyrigth
