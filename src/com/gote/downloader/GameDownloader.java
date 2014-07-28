@@ -17,9 +17,7 @@ package com.gote.downloader;
 
 import java.util.logging.Level;
 
-import javax.swing.JTextArea;
-
-import org.joda.time.DateTime;
+import javax.swing.JLabel;
 
 import com.gote.pojo.Game;
 import com.gote.pojo.Tournament;
@@ -35,16 +33,16 @@ public abstract class GameDownloader {
   protected Tournament tournament;
 
   /** JTextArea to show logs */
-  private JTextArea jTextArea;
+  private JLabel jLabel;
 
   /**
    * Constructor
    * 
    * @param pTournament Tournament reference with all the need informations for download
    */
-  public GameDownloader(Tournament pTournament, JTextArea pJTextArea) {
+  public GameDownloader(Tournament pTournament, JLabel pJLabel) {
     tournament = pTournament;
-    jTextArea = pJTextArea;
+    jLabel = pJLabel;
   }
 
   /**
@@ -69,7 +67,7 @@ public abstract class GameDownloader {
    * @param pLogText The text to write
    */
   protected void log(Level pLogLevel, String pLogText) {
-    jTextArea.append("\n" + new DateTime() + " GameDownloader \n" + pLogLevel.getName() + " : " + pLogText);
+    jLabel.setText("<html>" + pLogText + "</html>");
   }
 
   /**
@@ -80,6 +78,15 @@ public abstract class GameDownloader {
    * @param pException Exception
    */
   protected void log(Level pLogLevel, String pLogText, Exception pException) {
-    jTextArea.append("\n" + new DateTime() + " GameDownloader \n" + pLogLevel.getName() + " : " + pLogText);
+    jLabel.setText("<html>" + pLogText + "</html>");
+  }
+
+  /**
+   * Get tournament
+   * 
+   * @return Tournament
+   */
+  public Tournament getTournament() {
+    return tournament;
   }
 }

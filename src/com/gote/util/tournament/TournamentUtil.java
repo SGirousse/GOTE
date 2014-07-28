@@ -32,4 +32,10 @@ public final class TournamentUtil {
   /** Const text */
   public static final String CLOSE_WINDOW_MSG = "Confirmez-vous la fermeture de la fenêtre de gestion de tournoi ?";
 
+  /** */
+  public static final String WAITING_WINDOW_TITLE = "Mise à jour du tournoi";
+
+  /** */
+  public static final String WAITING_WINDOW_TEXT = "En cours de mise à jour...";
+
 }

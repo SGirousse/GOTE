@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import javax.swing.JTextArea;
+import javax.swing.JLabel;
 
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
@@ -89,6 +89,9 @@ public class KGSDownloader extends GameDownloader {
   /** Map of players <-> Document available */
   private Map<String, List<Document>> playersArchives;
 
+  /** Log stage */
+  private String stage;
+
   public static final int GAMEURL = 0;
 
   public static final int WHITEURL = 1;
@@ -103,8 +106,8 @@ public class KGSDownloader extends GameDownloader {
 
   public static final int RESULT = 6;
 
-  public KGSDownloader(Tournament pTournament, JTextArea pJTextArea) {
-    super(pTournament, pJTextArea);
+  public KGSDownloader(Tournament pTournament, JLabel pJLabel) {
+    super(pTournament, pJLabel);
   }
 
   @Override
@@ -150,6 +153,7 @@ public class KGSDownloader extends GameDownloader {
   }
 
   public List<Document> getPlayerArchive(String pPlayer, DateTime pStartDate, DateTime pEndDate) {
+    stage = "Etape 2/3- Téléchargement";
     List<Document> archivesPages = new ArrayList<Document>();
     ArchivePageUrlBuilder archivePageUrlBuilder;
 
@@ -187,20 +191,19 @@ public class KGSDownloader extends GameDownloader {
 
       // For each month
       for (int month = firstMonth; month <= lastMonth; month++) {
+        archivePageUrlBuilder = new ArchivePageUrlBuilder(pPlayer, new Integer(year).toString(),
+            new Integer(month).toString());
+        archivePageManager = new ArchivePageManager(archivePageUrlBuilder.getUrl());
+        Document doc = archivePageManager.getArchivePage();
+        if (doc != null) {
+          archivesPages.add(doc);
+        }
         // Wait for a amount of time, then KGS will not block the access
         try {
           Thread.sleep(WAITING_TIME);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        archivePageUrlBuilder = new ArchivePageUrlBuilder(pPlayer, new Integer(year).toString(),
-            new Integer(month).toString());
-        archivePageManager = new ArchivePageManager(archivePageUrlBuilder.getUrl());
-      }
-
-      Document doc = archivePageManager.getArchivePage();
-      if (doc != null) {
-        archivesPages.add(doc);
       }
     }
     return archivesPages;
@@ -213,6 +216,7 @@ public class KGSDownloader extends GameDownloader {
    * @param pPlayerArchivePages List of archive pages
    */
   private void retrieveAndUpdateGame(Game pGame, List<Document> pPlayerArchivePages) {
+    stage = "Etape 3/3 - Récupération de la partie";
     for (Document playerArchivePage : pPlayerArchivePages) {
       Elements tableRows = playerArchivePage.select("tr");
 
@@ -315,13 +319,13 @@ public class KGSDownloader extends GameDownloader {
 
   @Override
   protected void log(Level pLogLevel, String pLogText) {
-    super.log(pLogLevel, pLogText);
+    super.log(pLogLevel, stage + "<br>" + pLogText);
     LOGGER.log(pLogLevel, pLogText);
   }
 
   @Override
   protected void log(Level pLogLevel, String pLogText, Exception pException) {
-    super.log(pLogLevel, pLogText);
+    super.log(pLogLevel, stage + "<br>" + pLogText);
     LOGGER.log(pLogLevel, pLogText, pException);
   }
 }

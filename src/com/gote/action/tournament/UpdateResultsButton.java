@@ -15,10 +15,18 @@
  */
 package com.gote.action.tournament;
 
+import java.awt.Dimension;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.BoxLayout;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 import com.gote.downloader.GameDownloader;
 import com.gote.downloader.kgs.KGSDownloader;
@@ -26,6 +34,7 @@ import com.gote.pojo.Tournament;
 import com.gote.ui.tournament.TournamentUI;
 import com.gote.util.Servers;
 import com.gote.util.newtournament.NewTournamentUtil;
+import com.gote.util.tournament.TournamentUtil;
 
 public class UpdateResultsButton extends AbstractAction {
 
@@ -38,6 +47,10 @@ public class UpdateResultsButton extends AbstractAction {
   /** Current tournament */
   private Tournament tournament;
 
+  /** Label to show current messages */
+
+  private JLabel jLabelMainText;
+
   public UpdateResultsButton(TournamentUI pTournamentUI, Tournament pTournament, String pLabel) {
     super(pLabel);
     tournamentUI = pTournamentUI;
@@ -46,12 +59,26 @@ public class UpdateResultsButton extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent pActionEvent) {
-    GameDownloader gameDownloader = null;
-    if (tournament.getServerType().equals(Servers.KGS)) {
-      gameDownloader = new KGSDownloader(tournament, tournamentUI.getJTextAreaLog());
-    }
-    updateTournament(gameDownloader);
-    tournament.save();
+    SwingWorker<Object, Void> swingWorker = new SwingWorker<Object, Void>() {
+
+      @Override
+      protected Object doInBackground() throws Exception {
+        GameDownloader gameDownloader = null;
+        if (tournament.getServerType().equals(Servers.KGS)) {
+          gameDownloader = new KGSDownloader(tournament, getjLabelMainText());
+        }
+        updateTournament(gameDownloader);
+        tournament.save();
+        return null;
+      }
+    };
+
+    JDialog dialog = new JDialog(tournamentUI, true);
+    swingWorker.addPropertyChangeListener(new SwingWorkerCompletionWaiter(dialog));
+    swingWorker.execute();
+    // the dialog will be visible until the SwingWorker is done
+    dialog.setVisible(true);
+
   }
 
   /**
@@ -70,4 +97,45 @@ public class UpdateResultsButton extends AbstractAction {
     }
   }
 
+  /**
+   * @return returns jLabel.
+   */
+  public JLabel getjLabelMainText() {
+    return jLabelMainText;
+  }
+
+  /**
+   * @param jLabel jLabel to set.
+   */
+  public void setjLabelMainText(JLabel jLabel) {
+    this.jLabelMainText = jLabel;
+  }
+
+  private class SwingWorkerCompletionWaiter implements PropertyChangeListener {
+    private JDialog dialog;
+
+    public SwingWorkerCompletionWaiter(JDialog pJDialog) {
+      this.dialog = pJDialog;
+
+      setjLabelMainText(new JLabel("Etape 1/3 : Démarrage..."));
+
+      Panel panel = new Panel();
+      panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+      panel.add(new JLabel(TournamentUtil.WAITING_WINDOW_TITLE));
+      panel.add(getjLabelMainText());
+
+      dialog.setResizable(false);
+      dialog.setTitle(TournamentUtil.WAITING_WINDOW_TITLE);
+      dialog.setSize(new Dimension(400, 200));
+      dialog.setLocationRelativeTo(null);
+      dialog.setContentPane(panel);
+    }
+
+    public void propertyChange(PropertyChangeEvent event) {
+      if ("state".equals(event.getPropertyName()) && SwingWorker.StateValue.DONE == event.getNewValue()) {
+        dialog.setVisible(false);
+        dialog.dispose();
+      }
+    }
+  }
 }

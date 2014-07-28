@@ -239,8 +239,8 @@ public class Round {
   public List<Game> getToBePlayedGameList() {
     List<Game> toBePlayedGames = new ArrayList<Game>();
     for (Game game : getGameList()) {
-      // TODO should not add game with result like RESULT_WHITEWINS
-      if (game.getResult() != null) {
+      if (game.getResult() != null
+          && game.getResult().equalsIgnoreCase(TournamentOpenGothaUtil.VALUE_GAME_RESULT_UNKNOWN)) {
         toBePlayedGames.add(game);
       }
     }
