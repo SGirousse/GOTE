@@ -16,26 +16,31 @@
 package com.gote.util.tournament;
 
 public final class TournamentUtil {
+  /**
+   * Main window labels
+   */
   public static final String WINDOW_TITLE = "Tournament manager - ";
 
-  public static final String BUTTON_UPDATE_LABEL = "Mettre à jour";
+  public static final String BUTTON_UPDATE_LABEL = "Télécharger les parties";
 
   public static final String BUTTON_EXPORT_LABEL = "Exporter";
 
   /**
-   * Message Box const elements
+   * Message Box const labels
    */
-
   /** Const title */
   public static final String CLOSE_WINDOW_TITLE = "Fermeture";
 
   /** Const text */
   public static final String CLOSE_WINDOW_MSG = "Confirmez-vous la fermeture de la fenêtre de gestion de tournoi ?";
 
-  /** */
+  /**
+   * Waiting window labels
+   */
+  /** Waiting window title */
   public static final String WAITING_WINDOW_TITLE = "Mise à jour du tournoi";
 
-  /** */
+  /** Waiting window text */
   public static final String WAITING_WINDOW_TEXT = "En cours de mise à jour...";
 
 }

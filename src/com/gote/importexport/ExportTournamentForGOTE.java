@@ -15,10 +15,13 @@
  */
 package com.gote.importexport;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.gote.pojo.Tournament;
+import com.gote.util.ImportExportUtil;
 
 /**
  * 
@@ -34,24 +37,19 @@ public class ExportTournamentForGOTE extends ExportTournament {
   @Override
   public void export(Tournament pTournament) {
     LOGGER.log(Level.INFO, "Export tournament " + pTournament.getTitle() + " in GOTE format is starting");
-    pTournament.save();
 
-    // TODO check befor creation in order to copy older file before saving the tournament in its
-    // current state
-    // File file = new File(AppUtil.PATH_TO_TOURNAMENTS + pTournament.getTitle().trim() + "/" +
-    // AppUtil.PATH_TO_SAVE
-    // + pTournament.getTitle().trim() + "_" + new DateTime().toString("dd-MM-yyyy_hhmmss") +
-    // FILE_EXTENSION_XML);
-    //
-    // FileWriter fileWriter;
-    //
-    // try {
-    // fileWriter = new FileWriter(file);
-    // fileWriter.write(pTournament.toXML());
-    // fileWriter.close();
-    // } catch (IOException e) {
-    // LOGGER.log(Level.SEVERE, "Error during writing file", e);
-    // }
+    // Build path to GOTE file
+    String goteExportFileURI = ImportExportUtil.buildFileURI(getImportExportType(), pTournament.getTitle());
 
+    // Make a copy
+    ImportExportUtil.copyBeforeModification(Paths.get(goteExportFileURI));
+
+    // Then transform data to xml
+    pTournament.save(new File(goteExportFileURI));
+  }
+
+  @Override
+  protected String getImportExportType() {
+    return ImportExportUtil.IMPORTEXPORT_TYPE_GOTE;
   }
 }

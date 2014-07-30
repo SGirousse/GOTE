@@ -84,22 +84,18 @@ public class Tournament {
   /**
    * Save tournament in a new xml file
    */
-  public void save() {
-    // TODO check befor creation in order to copy older file before saving the tournament in its
-    // current state
-    File file = new File(AppUtil.PATH_TO_TOURNAMENTS + getTitle().trim() + "/" + AppUtil.PATH_TO_SAVE
-        + getTitle().trim() + ".xml");
+  public void save(File pFile) {
 
     FileWriter fileWriter;
 
     try {
-      fileWriter = new FileWriter(file);
+      fileWriter = new FileWriter(pFile);
       fileWriter.write(toXML());
       fileWriter.close();
     } catch (IOException e) {
-      LOGGER.log(Level.SEVERE, "Error during writing file " + file.getName(), e);
+      LOGGER.log(Level.SEVERE, "Error during writing file " + pFile.getName(), e);
     }
-    LOGGER.log(Level.INFO, "File " + file.getName() + " saved");
+    LOGGER.log(Level.INFO, "File " + pFile.getName() + " saved");
   }
 
   /**

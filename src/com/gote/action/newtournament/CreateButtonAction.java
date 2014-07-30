@@ -58,6 +58,8 @@ public class CreateButtonAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent pActionEvent) {
+    newTournamentUI.getTournament().setTitle(newTournamentUI.getjEditorPaneTournamentTitle().getText());
+    newTournamentUI.getTournament().getTournamentRules().setTag(newTournamentUI.getjEditorPaneTag().getText());
     if (createTournamentFolders()) {
       ExportTournament exportTournament = new ExportTournamentForGOTE();
       exportTournament.export(newTournamentUI.getTournament());

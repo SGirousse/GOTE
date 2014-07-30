@@ -49,6 +49,7 @@ import com.gote.importexport.ImportTournament;
 import com.gote.importexport.ImportTournamentFromGOTE;
 import com.gote.pojo.Tournament;
 import com.gote.ui.tournament.TournamentUI;
+import com.gote.util.ImportExportUtil;
 import com.gote.util.home.HomeUtil;
 
 /**
@@ -188,10 +189,10 @@ public class HomeUI extends JFrame implements WindowListener {
    * @param folderName Tournament name used to name the folder containing it
    * @return a Tournament instance
    */
-  public Tournament loadTournament(String folderName) {
+  public Tournament loadTournament(String pFolderName) {
     ImportTournament importTournament = new ImportTournamentFromGOTE();
-    return importTournament.createTournamentFromConfig(new File(AppUtil.PATH_TO_TOURNAMENTS + folderName + "/"
-        + AppUtil.PATH_TO_SAVE + folderName + ".xml"));
+    return importTournament.createTournamentFromConfig(new File(ImportExportUtil.buildFileURI(
+        ImportExportUtil.IMPORTEXPORT_TYPE_GOTE, pFolderName)));
   }
 
   @Override

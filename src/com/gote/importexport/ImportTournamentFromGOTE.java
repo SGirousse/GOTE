@@ -70,4 +70,5 @@ public class ImportTournamentFromGOTE extends ImportTournament {
 
     return true;
   }
+
 }

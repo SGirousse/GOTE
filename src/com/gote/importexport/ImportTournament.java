@@ -26,5 +26,12 @@ import com.gote.pojo.Tournament;
  * @author sgirouss
  */
 public abstract class ImportTournament {
-  public abstract Tournament createTournamentFromConfig(File file);
+
+  /**
+   * Taking a configuration data source in entry, this build a new tournament.
+   * 
+   * @param pFile File used to create the tournament
+   * @return A new <code>Tournament</code>
+   */
+  public abstract Tournament createTournamentFromConfig(File pFile);
 }

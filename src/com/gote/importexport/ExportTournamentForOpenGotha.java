@@ -15,14 +15,10 @@
  */
 package com.gote.importexport;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,9 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.joda.time.DateTime;
 
-import com.gote.AppUtil;
 import com.gote.pojo.Tournament;
 import com.gote.util.ImportExportUtil;
 import com.gote.util.xml.TournamentOpenGothaUtil;
@@ -53,11 +47,10 @@ public class ExportTournamentForOpenGotha extends ExportTournament {
   @Override
   public void export(Tournament pTournament) {
     // Build path to opengotha file
-    String openGothaExportFileURI = AppUtil.PATH_TO_TOURNAMENTS + pTournament.getTitle() + "/"
-        + AppUtil.PATH_TO_EXPORTS + "opengotha_" + pTournament.getTitle() + ".xml";
+    String openGothaExportFileURI = ImportExportUtil.buildFileURI(getImportExportType(), pTournament.getTitle());
 
     // Make a copy
-    copyBeforeModidy(Paths.get(openGothaExportFileURI));
+    ImportExportUtil.copyBeforeModification(Paths.get(openGothaExportFileURI));
 
     // Get the file and its content
     File file = new File(openGothaExportFileURI);
@@ -78,21 +71,6 @@ public class ExportTournamentForOpenGotha extends ExportTournament {
 
     // Write Document
     updateFile(file, document);
-  }
-
-  /**
-   * Save the file before deleting it
-   * 
-   * @param currentFile Path to the OpenGotha file to copy
-   */
-  private void copyBeforeModidy(Path currentFile) {
-    Path target = Paths.get(currentFile.getParent() + "/"
-        + currentFile.getFileName().toString().replace(".xml", new DateTime().toString("ddMMyyyyhhmm") + ".xml"));
-    try {
-      Files.copy(currentFile, target, REPLACE_EXISTING);
-    } catch (IOException e) {
-      LOGGER.log(Level.SEVERE, "Copy of opengotha from " + currentFile + " to " + target + " failed", e);
-    }
   }
 
   /**
@@ -163,4 +141,10 @@ public class ExportTournamentForOpenGotha extends ExportTournament {
     }
     LOGGER.log(Level.INFO, "File " + pFile.getName() + " updated");
   }
+
+  @Override
+  protected String getImportExportType() {
+    return ImportExportUtil.IMPORTEXPORT_TYPE_GOTHA;
+  }
+
 }

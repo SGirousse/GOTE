@@ -43,7 +43,7 @@ public class ArchivePageManager extends KGSUtils {
     try {
       doc = Jsoup.connect(getPageUrl()).get();
     } catch (IOException e) {
-      LOGGER.log(Level.SEVERE, "IOException, connexion impossible", e);
+      LOGGER.log(Level.SEVERE, "IOException, connexion impossible to " + getPageUrl(), e);
       return null;
     } catch (IllegalArgumentException e) {
       LOGGER.log(Level.SEVERE, "The URL \"" + getPageUrl() + "\" was malformed", e);

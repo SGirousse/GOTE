@@ -91,4 +91,13 @@ public final class NewTournamentUtil {
   public static final String BORDER_TITLE_SOURCE = "Source";
 
   public static final String BORDER_TITLE_ROUNDS = "Tableau des rondes";
+
+  /**
+   * Radio buttons
+   */
+  public static final String RADIO_BUTTON_SERVER_KGS_LABEL = "KGS";
+
+  public static final String RADIO_BUTTON_SERVER_OGS_LABEL = "KGS";
+
+  public static final String RADIO_BUTTON_SERVER_NO_SERVER_LABEL = "Aucun serveur";
 }

@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -27,6 +28,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -34,6 +36,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -158,7 +161,13 @@ public class NewTournamentUI extends JFrame implements WindowListener {
     jTableRounds.setPreferredScrollableViewportSize(jTableRounds.getPreferredSize());
     jTableRounds.setFillsViewportHeight(true);
 
-    // COMBO BOX
+    // RADIO BUTTONS
+    JRadioButton jRadioButtonKGS = new JRadioButton(NewTournamentUtil.RADIO_BUTTON_SERVER_KGS_LABEL);
+    jRadioButtonKGS.setSelected(true);
+    JRadioButton jRadioButtonNoServer = new JRadioButton(NewTournamentUtil.RADIO_BUTTON_SERVER_NO_SERVER_LABEL);
+    ButtonGroup buttonGroupServers = new ButtonGroup();
+    buttonGroupServers.add(jRadioButtonKGS);
+    buttonGroupServers.add(jRadioButtonNoServer);
 
     // BUTTONS
     JButton jButtonFilePath = new JButton(new FileChooserAction(this, tournament,
@@ -190,9 +199,9 @@ public class NewTournamentUI extends JFrame implements WindowListener {
     JPanel jPanelCriteria = new JPanel();
     jPanelCriteria.setLayout(new FlowLayout(FlowLayout.LEFT));
     jPanelCriteria.setBorder(BorderFactory.createTitledBorder(NewTournamentUtil.BORDER_TITLE_CRITERIA));
-    jPanelCriteria.setPreferredSize(new Dimension(750, 140));
-    jPanelCriteria.setMaximumSize(new Dimension(750, 140));
-    jPanelCriteria.setMinimumSize(new Dimension(750, 140));
+    jPanelCriteria.setPreferredSize(new Dimension(750, 200));
+    jPanelCriteria.setMaximumSize(new Dimension(750, 200));
+    jPanelCriteria.setMinimumSize(new Dimension(750, 200));
     JPanel jPanelTitle = new JPanel();
     jPanelTitle.add(jLabelTournamentTitle);
     jPanelTitle.add(jEditorPaneTournamentTitle);
@@ -202,6 +211,15 @@ public class NewTournamentUI extends JFrame implements WindowListener {
     jPanelTag.add(jLabelTagHelper);
     jPanelCriteria.add(jPanelTitle);
     jPanelCriteria.add(jPanelTag);
+
+    JPanel jPanelRadioButtonAll = new JPanel(new GridLayout(0, 2, 0, -20));
+    JPanel jPanelRadioButtonServer = new JPanel(new GridLayout(0, 1));
+    jPanelRadioButtonServer.add(jRadioButtonKGS);
+    jPanelRadioButtonServer.add(jRadioButtonNoServer);
+    jPanelRadioButtonAll.add(new JLabel(NewTournamentUtil.LABEL_TOURNAMENT_SOURCE + " : "));
+    jPanelRadioButtonAll.add(jPanelRadioButtonServer);
+
+    jPanelCriteria.add(jPanelRadioButtonAll);
 
     JPanel jPanelLocation = new JPanel();
     jPanelLocation.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -339,6 +357,34 @@ public class NewTournamentUI extends JFrame implements WindowListener {
    */
   public void setTournament(Tournament pTournament) {
     this.tournament = pTournament;
+  }
+
+  /**
+   * @return returns jEditorPaneTournamentTitle.
+   */
+  public JEditorPane getjEditorPaneTournamentTitle() {
+    return jEditorPaneTournamentTitle;
+  }
+
+  /**
+   * @param pJEditorPaneTournamentTitle jEditorPaneTournamentTitle to set.
+   */
+  public void setjEditorPaneTournamentTitle(JEditorPane pJEditorPaneTournamentTitle) {
+    this.jEditorPaneTournamentTitle = pJEditorPaneTournamentTitle;
+  }
+
+  /**
+   * @return returns jEditorPaneTag.
+   */
+  public JEditorPane getjEditorPaneTag() {
+    return jEditorPaneTag;
+  }
+
+  /**
+   * @param pJEditorPaneTag jEditorPaneTag to set.
+   */
+  public void setjEditorPaneTag(JEditorPane pJEditorPaneTag) {
+    this.jEditorPaneTag = pJEditorPaneTag;
   }
 
   /**

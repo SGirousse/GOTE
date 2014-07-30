@@ -30,6 +30,8 @@ import javax.swing.SwingWorker;
 
 import com.gote.downloader.GameDownloader;
 import com.gote.downloader.kgs.KGSDownloader;
+import com.gote.importexport.ExportTournament;
+import com.gote.importexport.ExportTournamentForGOTE;
 import com.gote.pojo.Tournament;
 import com.gote.ui.tournament.TournamentUI;
 import com.gote.util.Servers;
@@ -48,7 +50,6 @@ public class UpdateResultsButton extends AbstractAction {
   private Tournament tournament;
 
   /** Label to show current messages */
-
   private JLabel jLabelMainText;
 
   public UpdateResultsButton(TournamentUI pTournamentUI, Tournament pTournament, String pLabel) {
@@ -68,7 +69,6 @@ public class UpdateResultsButton extends AbstractAction {
           gameDownloader = new KGSDownloader(tournament, getjLabelMainText());
         }
         updateTournament(gameDownloader);
-        tournament.save();
         return null;
       }
     };
@@ -78,7 +78,6 @@ public class UpdateResultsButton extends AbstractAction {
     swingWorker.execute();
     // the dialog will be visible until the SwingWorker is done
     dialog.setVisible(true);
-
   }
 
   /**
@@ -111,9 +110,20 @@ public class UpdateResultsButton extends AbstractAction {
     this.jLabelMainText = jLabel;
   }
 
+  /**
+   * Object used to wait for <code>SwingWorker</code> to spread the event
+   * <code>SwingWorker.StateValue.DONE</code> and then hide the JDialog
+   */
   private class SwingWorkerCompletionWaiter implements PropertyChangeListener {
+
+    /** Waiting window showed during download */
     private JDialog dialog;
 
+    /**
+     * Constructor
+     * 
+     * @param pJDialog Waiting window showed during download
+     */
     public SwingWorkerCompletionWaiter(JDialog pJDialog) {
       this.dialog = pJDialog;
 
@@ -131,10 +141,15 @@ public class UpdateResultsButton extends AbstractAction {
       dialog.setContentPane(panel);
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent event) {
       if ("state".equals(event.getPropertyName()) && SwingWorker.StateValue.DONE == event.getNewValue()) {
         dialog.setVisible(false);
         dialog.dispose();
+
+        // Finally export the tournament as a new save
+        ExportTournament export = new ExportTournamentForGOTE();
+        export.export(tournament);
       }
     }
   }

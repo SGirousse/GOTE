@@ -17,11 +17,25 @@ package com.gote.importexport;
 
 import com.gote.pojo.Tournament;
 
+/**
+ * 
+ * Abstract class to provide some generic or to be implemented methods for export.
+ * 
+ * @author sgirouss
+ */
 public abstract class ExportTournament {
+
   /**
    * Export a Tournament
    * 
    * @param pTournament Tournament
    */
   public abstract void export(Tournament pTournament);
+
+  /**
+   * Return importexport type
+   * 
+   * @return String
+   */
+  protected abstract String getImportExportType();
 }

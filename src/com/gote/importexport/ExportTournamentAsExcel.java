@@ -16,11 +16,17 @@
 package com.gote.importexport;
 
 import com.gote.pojo.Tournament;
+import com.gote.util.ImportExportUtil;
 
 public class ExportTournamentAsExcel extends ExportTournament {
 
   @Override
   public void export(Tournament pTournament) {
+    // String excelFileURI = ImportExportUtil.buildFileURI(getImportExportType(), pTournament);
+  }
 
+  @Override
+  public String getImportExportType() {
+    return ImportExportUtil.IMPORTEXPORT_TYPE_EXCEL;
   }
 }
